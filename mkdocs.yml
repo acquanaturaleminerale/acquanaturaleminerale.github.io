@@ -3,6 +3,9 @@ site_name: test
 theme:
   name: material
 
+extra_css:
+  - stylesheets/extra.css
+
 nav:
   - Home: index.md
   - My Involvement: involvement.md

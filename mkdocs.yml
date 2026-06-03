@@ -1,0 +1,9 @@
+site_name: test
+
+theme:
+  name: material
+
+nav:
+  - Home: index.md
+  - My Involvement: involvement.md
+  - Documentation: documentation.md

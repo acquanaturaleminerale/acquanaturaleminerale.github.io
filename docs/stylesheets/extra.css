@@ -1,15 +1,16 @@
-.md-sidebar__scrollwrap {
+.md-sidebar__scrollwrap,
+.md-sidebar,
+.md-sidebar--primary,
+.md-sidebar--secondary {
     background-color: #111;
 }
-
-.md-nav__link {
-    color: rgba(255,255,255,.8);
-}
-
-.md-nav__link:hover {
+.md-nav__title {
+    background-color: #111 !important;
     color: white;
 }
-
-.md-nav__link--active {
-    color: white !important;
+.md-nav--secondary .md-nav__title {
+    background-color: #111 !important;
+}
+.md-sidebar__inner {
+    background-color: #111;
 }

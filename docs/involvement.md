@@ -1,15 +1,6 @@
-# Welcome to MkDocs
+# Welcome to Involvement
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
-
-## Commands
-
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
-
-## Project layout
+i will put the entire log of my involvement with exerplaza, mostly a tldr
 
 # My Involvement
 

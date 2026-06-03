@@ -2,6 +2,9 @@ site_name: test
 
 theme:
   name: material
+
+extra_css:
+  - docs/stylesheets/extra.css
   
 features:
   - navigation.sections

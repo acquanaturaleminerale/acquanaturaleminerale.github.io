@@ -3,14 +3,6 @@ site_name: test
 theme:
   name: material
 
-extra_css:
-  - stylesheets/extra.css
-  
-features:
-  - navigation.sections
-  - navigation.expand
-  - navigation.tabs
-  
 nav:
   - Home: index.md
   - My Involvement: involvement.md

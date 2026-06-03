@@ -1,7 +1,7 @@
-.md-sidebar {
-    border-radius: 12px;
+.md-sidebar__scrollwrap {
+    background-color: #111;
 }
 
-.md-sidebar__scrollwrap {
-    box-shadow: 0 4px 20px rgba(0,0,0,.25);
+.md-nav__link {
+    color: white;
 }

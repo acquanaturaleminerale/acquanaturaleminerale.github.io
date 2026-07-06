@@ -4,7 +4,8 @@
 
 ## 0) Make sure you pull the correct branch
 
-currently the main branch so the saml implementation is currently only under the simone-developement branch
+currently the main branch does not have the saml implementation
+so the saml implementation is currently only under the simone-developement branch
 make sure to git pull the branch.
 
 ## 1) Configure environment variables
@@ -71,7 +72,9 @@ The generated files are used by the Service Provider to sign SAML messages.
 The script also performs validation checks to ensure:
 
 the certificate is readable;
+
 the certificate has not expired;
+
 the private key matches the certificate.
 
 The script will also tell you the location on generated files.
@@ -85,9 +88,9 @@ This ensures the certificate/key pair is hooked up to the system.
 ## 5) Generate the SAML secret
 
 Generate a cryptographically random secret:
-
+```bash
 docker compose exec -it web openssl rand -hex 32
-
+```
 Replace the value of SAML_SECRET in .env with the generated output.
 
 Example:
@@ -103,17 +106,19 @@ is the working idp metadata used with the local keycloak idp. It will only work 
 so remove it if you are using your own configured idp.
 
 Place the Identity Provider metadata file inside:
-
+```directory
 exerplaza/backend/saml_configuration/metadata/
-
+```
 The expected file is, so make sure it is named that way:
-
+```file
 idp_metadata.xml
-
+```
 The metadata contains information required by the Service Provider to communicate with the Identity Provider, including:
 
 entity identifier;
+
 endpoints;
+
 certificates.
 
 For local testing, the simone-developement-keycloak branch contains the idp configuration used during development.
@@ -132,9 +137,13 @@ The default configuration was tested with the Keycloak Identity Provider used du
 Important values to verify:
 
 ACS endpoint;
+
 entity ID;
+
 signing requirements;
+
 certificate configuration;
+
 metadata location.
 
 refer to the pysaml2 documentation if you need to change any values in it.

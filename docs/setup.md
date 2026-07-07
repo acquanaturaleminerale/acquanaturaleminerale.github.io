@@ -32,11 +32,9 @@ SAML_SECRET=0123456789 #temporary value
 | `SAML_LOG_LEVEL` | Controls the verbosity of SAML-related logs. For production should be "INFO" | `DEBUG` |
 | `SAML_SECRET` | Secret used by PySAML2. Generate a random value during initialization and replace it after setup. | generated value |
 
-SAML_BASE_URL must match the one shown on browser when acessing the exerplaza home page
-
-SAML_DEBUG can be either true or false
-
-SAML_LOG_LEVEL can be  "DEBUG", "INFO", "WARNING", "ERROR" or "CRITICAL" for production INFO is raccomanded
+SAML_BASE_URL must match the one shown on browser when acessing the exerplaza home page  
+SAML_DEBUG can be either true or false  
+SAML_LOG_LEVEL can be  "DEBUG", "INFO", "WARNING", "ERROR" or "CRITICAL" for production INFO is raccomanded  
 
 At this stage SAML_SECRET can contain a temporary value. It will be replaced later after generating the final secret.
 
@@ -49,11 +47,10 @@ Initialize the application containers:
 ```bash
 docker compose up
 ```
-This ensures that:
-
-dependencies are installed;
-the application environment exists;
-required services are available.
+This ensures that:  
+- dependencies are installed;  
+- the application environment exists;  
+- required services are available.  
 
 Be aware that the saml system at this stage is not yet configured and while you can reach it endpoints it
 will not run even if you do.

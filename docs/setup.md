@@ -12,8 +12,8 @@ The Keycloak setup described later is only a development convenience used during
 
 !!! warning "Development environment only"
 
-This setup describes the current development and testing environment.
-The SAML implementation has not been validated for production deployment yet.
+    This setup describes the current development and testing environment.
+    The SAML implementation has not been validated for production deployment yet.
 
 Do not use these settings directly in production. Before deploying to production, review:
 - certificate management;
@@ -34,7 +34,7 @@ After switching to the correct branch, pull the latest changes before starting t
 
 !!! note:
 
-Exerplaza’s current SAML implementation is based on PySAML2. If you need additional information about library behaviour or configuration, refer to the [PySAML2 documentation](https://pysaml2.readthedocs.io/).
+    Exerplaza’s current SAML implementation is based on PySAML2. If you need additional information about library behaviour or configuration, refer to the   [PySAML2 documentation](https://pysaml2.readthedocs.io/).
 
 ---
 

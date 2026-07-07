@@ -34,7 +34,8 @@ After switching to the correct branch, pull the latest changes before starting t
 
 !!! note:
 
-    Exerplaza’s current SAML implementation is based on PySAML2. If you need additional information about library behaviour or configuration, refer to the   [PySAML2 documentation](https://pysaml2.readthedocs.io/).
+    Exerplaza’s current SAML implementation is based on PySAML2.
+    If you need additional information about library behaviour or configuration, refer to the [PySAML2 documentation](https://pysaml2.readthedocs.io/).
 
 ---
 
@@ -115,8 +116,6 @@ The certificate is used by the Service Provider to sign SAML requests.
 
 If the configured Identity Provider requires signed requests, the SP certificate must also be registered inside the IdP configuration.
 
-If using a different Identity Provider, ensure that the generated SP certificate is registered there according to the IdP requirements.
-
 The script also performs validation checks to ensure that:
 
 * the certificate can be read correctly;
@@ -166,9 +165,18 @@ The secret should remain stable across deployments. Changing it invalidates exis
 
 ### Default metadata file
 
-The repository already contains an `idp_metadata.xml` file used during development with the local Keycloak Identity Provider. That file is only valid for that specific Keycloak configuration. While this metdata file should work if you are using the keycloak setup mentioned later i still strongly raccomand replacing it with the one given by the idp.
+The repository already contains an `idp_metadata.xml` file used during development with the local Keycloak Identity Provider. That file is only valid for that specific Keycloak configuration. The provided metadata file should work with the Keycloak configuration described later. However, it is recommended to replace it with the metadata provided by the actual Identity Provider, even when using the same IdP software.
 
 If you are using a different Identity Provider, replace it with the correct metadata for your IdP.
+
+The SAML response must contain an email attribute so make sure the idp provides one. If you are using the keycloak idp mentioned further below an email attribute is already configured in it.
+
+Exerplaza uses this attribute to associate the authenticated SAML user with an existing local user. 
+
+When using a different Identity Provider, ensure that:
+- an email attribute is released;
+- the attribute name matches the configured mapper;
+- the value matches the user's Exerplaza account email.
 
 If you do not have an idp yet you can follow the local keycloak idp setup guide further below or set up your own.
 
@@ -188,20 +196,10 @@ idp_metadata.xml
 
 The IdP metadata file is the only IdP-specific file required by the default setup.
 
-When replacing the IdP:
+When replacing the Identity Provider:
 1. replace `idp_metadata.xml`;
-2. verify that the IdP entity ID matches the SP configuration;
-3. verify that the IdP releases the required attributes;
-4. verify that the authentication response format matches the expectations configured in PySAML2.
-
-The SAML response must contain an email attribute so make sure the idp provides one.
-
-Exerplaza uses this attribute to associate the authenticated SAML user with an existing local user.
-
-When using a different Identity Provider, ensure that:
-- an email attribute is released;
-- the attribute name matches the configured mapper;
-- the value matches the user's Exerplaza account email.
+2. ensure the IdP provides the attributes required by Exerplaza;
+3. ensure `saml_sp_config.py` matches the IdP configuration.
 
 ---
 
@@ -243,6 +241,19 @@ docker compose down
 and then start them again when needed.
 
 This is necessary because the SAML configuration is loaded from environment variables and files, and the Service Provider configuration is cached by the Flask application once initialized.
+
+---
+
+# Verify successful setup
+
+The setup is complete when:
+
+- Exerplaza starts without SAML configuration errors;
+- the SAML login option is visible;
+- the user is redirected to the Identity Provider;
+- authentication succeeds;
+- the user is redirected back to Exerplaza;
+- the authenticated user matches an existing Exerplaza account.
 
 ---
 
@@ -292,6 +303,13 @@ The default Keycloak configuration used during development is available in the `
 realm-export.json
 ```
 
+The export contains:
+- the SAML client representing Exerplaza;
+- client scopes;
+- attribute mappers;
+- signing configuration;
+- realm settings.
+
 Import the realm export into Keycloak after logging in.
 
 The export recreates the development realm configuration, including the SAML client, scopes, and mappings required for testing.
@@ -324,13 +342,6 @@ if you are using the same keycloak setup used for testing it is found at:
 http://localhost:8080/realms/saml-test/protocol/saml/descriptor
 ```
 
-The export contains:
-- the SAML client representing Exerplaza;
-- client scopes;
-- attribute mappers;
-- signing configuration;
-- realm settings.
-
 Then replace the metadata file used by Exerplaza:
 
 ```text
@@ -354,7 +365,7 @@ exerplaza/backend/saml_configuration/scripts/test_user.py
 Run it inside the container:
 
 ```bash
-docker compose exec -it web python exerplaza/backend/saml_configuration/scripts/test_user.py
+docker compose exec -it web exerplaza/backend/saml_configuration/scripts/test_user.py
 ```
 
 Make sure a Keycloak user with the same email address also exists, otherwise the SAML login will succeed at the IdP level but fail during Exerplaza’s local user lookup.

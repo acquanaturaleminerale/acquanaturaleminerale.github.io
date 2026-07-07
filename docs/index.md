@@ -2,7 +2,7 @@
 
 My name is Simone Ferro, and I am a Bachelor's student in Computer Engineering at the University of Padua.
 
-This website contains the documentation of my work on the Exerplaza project and serves as the written component of my Bachelor's thesis. Its purpose is to document the activities carried out during my involvement in the project, including the technical decisions, implementations, and results achieved.
+This website hosts the documentation of my work on the Exerplaza project and serves as the written component of my Bachelor's thesis. Its purpose is to document the activities carried out during my involvement in the project, including the technical decisions, implementations, and results achieved.
 
 # Credits
 

@@ -22,6 +22,9 @@ The final result is a functional SAML authentication prototype integrated alongs
 
 ## Detailed involvement
 
+!!!Note: 
+   The following detailed involvement log is provided as supplementary documentation of the development process. The previous sections summarize the main      contributions, decisions, and final results.
+
 ### Project onboarding and analysis
 
 At the beginning of my involvement, I had to become familiar with an existing project and its development environment. Since I was joining an already active codebase, my first objective was to understand the structure of Exerplaza, the technologies used by the project, and the workflow followed by the development team.

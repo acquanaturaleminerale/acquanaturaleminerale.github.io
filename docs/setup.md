@@ -292,6 +292,11 @@ Keycloak exposes the SAML Identity Provider metadata through its descriptor endp
 ```text
 http://<keycloak-host>:<port>/realms/<realm-name>/protocol/saml/descriptor
 
+if you are using the same keycloak setup used for testing it is found at:
+
+```text
+http://localhost:8080/realms/saml-test/protocol/saml/descriptor
+
 Then replace the metadata file used by Exerplaza:
 
 ```text

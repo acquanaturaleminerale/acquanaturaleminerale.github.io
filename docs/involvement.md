@@ -12,7 +12,7 @@ My contribution to the Exerplaza project focused on designing and implementing a
 
 The project started from an existing Flask application that used a traditional application-managed authentication flow based on user credentials and browser sessions. The objective was to introduce Single Sign-On capabilities through SAML authentication while respecting the constraints of the existing project, avoiding large-scale architectural changes that were not feasible within the project scope.
 
-I began by analyzing the existing codebase, development environment, and authentication flow, then evaluated different approaches for implementing SAML authentication, including external SAML middleware/software solutions and direct integration through Python libraries. After comparing the available alternatives, I chose a Python-based approach and designed and implemented a Service Provider using PySAML2. PySAML2, a Python library for implementing SAML Service Providers and Identity Providers.
+I began by analyzing the existing codebase, development environment, and authentication flow, then evaluated different approaches for implementing SAML authentication, including external SAML middleware/software solutions and direct integration through Python libraries. After comparing the available alternatives, I chose a Python-based approach and designed and implemented a Service Provider using PySAML2, a Python library providing SAML Service Provider functionality.
 
 During development, I identified limitations in the library's default state management when used in the Exerplaza environment, particularly regarding the persistence of authentication state across application workers. To address these issues, I extended the implementation with a database-backed SAML request tracking system responsible for maintaining authentication state, validating requests, and preventing replay attacks.
 
@@ -52,7 +52,7 @@ Considering the existing Flask-based architecture, available development scope, 
 
 The implementation phase started with the creation of a minimal prototype using a single Identity Provider. This approach allowed me to validate my understanding of the SAML authentication flow before considering additional complexity related to multiple Identity Providers and federation scenarios.
 
-I integrated PySAML2 into the project environment, configured the Service Provider, created the required SAML routes and templates, and implemented the authentication flow inside the existing Flask application. During this phase, I adapted the library configuration to match the existing project structure and deployment environment while maintaining compatibility with the existing authentication system.
+I integrated PySAML2 into the project environment, configured the Service Provider, created the required SAML routes and templates, and implemented the authentication flow inside the existing Flask application. The implementation was introduced as an additional authentication option, leaving the existing authentication mechanisms unchanged. During this phase, I adapted the library configuration to match the existing project structure and deployment environment while maintaining compatibility with the existing authentication system.
 
 During development, I also:
 
@@ -63,7 +63,7 @@ implemented dedicated error handling for authentication failures.
 
 After completing the initial implementation, I learned how to configure and use a local Keycloak Identity Provider for end-to-end testing of the complete authentication flow. While the initial implementation successfully passed automated tests, end-to-end testing revealed a limitation related to the way PySAML2 handled internal authentication state.
 
-PySAML2's default request state handling relied on internal state storage that was not suitable for the Exerplaza deployment environment, particularly due to the use of multiple uWSGI workers. As a result, valid SAML responses could be rejected because the authentication state created during the initial request was not consistently available during the response validation phase. The implementation was introduced as an additional authentication option, leaving the existing authentication mechanisms unchanged.
+PySAML2's default request state handling relied on internal state storage that was not suitable for the Exerplaza deployment environment, particularly due to the use of multiple uWSGI workers. As a result, valid SAML responses could be rejected because the authentication state created during the initial request was not consistently available during the response validation phase.
 
 To address this limitation, I reorganized the implementation into separate modules responsible for SAML services, request tracking, configuration handling, and route management. I then implemented a database-backed SAML request tracking system, moving authentication transaction management from transient library state to persistent storage. This ensured consistency across different workers while providing additional protections through request identifier tracking, expiration validation, and single-use consumption of authentication requests.
 
@@ -106,7 +106,7 @@ the current scope and limitations of the implementation.
 
 ### Final result and lessons learned
 
-The final result of my work is a functional SAML Service Provider prototype integrated into Exerplaza, capable of completing the authentication flow with a single external Identity Provider and implementing replay protection mechanisms for authentication requests through persistent SAML request tracking.
+The final result of my work is a functional SAML Service Provider prototype integrated into Exerplaza, capable of completing the authentication flow with a single external Identity Provider and implementing replay protection for authentication requests through persistent SAML request tracking.
 
 Beyond the technical implementation, this project provided experience in integrating new functionality into an existing software system, evaluating architectural trade-offs, working with authentication and security protocols, and adapting to unexpected challenges during development.
 

@@ -71,13 +71,10 @@ saml_configuration/
 ```
 The generated files are used by the Service Provider to sign SAML messages.
 
-The script also performs validation checks to ensure:
-
-the certificate is readable;
-
-the certificate has not expired;
-
-the private key matches the certificate.
+The script also performs validation checks to ensure:  
+- the certificate is readable;  
+- the certificate has not expired;  
+- the private key matches the certificate.  
 
 The script will also tell you the location on generated files.
 
@@ -115,35 +112,31 @@ The expected file is, so make sure it is named that way:
 ```file
 idp_metadata.xml
 ```
-The metadata contains information required by the Service Provider to communicate with the Identity Provider, including:
-
-entity identifier;
-
-endpoints;
-
-certificates.
+The metadata contains information required by the Service Provider to communicate with the Identity Provider, including:  
+entity identifier;  
+endpoints;  
+certificates.  
 
 ## 7) Verify Service Provider configuration
 
-Ensure that:
+Ensure that the file in:
 ```file
 saml_sp_config.py
+```
+you can find it in:
+```directory
+exerplaza/backend/saml_configuration/
 ```
 matches the configured Identity Provider.
 
 The default configuration was tested with the Keycloak Identity Provider used during development.
 
-Important values to verify:
-
-ACS endpoint;
-
-entity ID;
-
-signing requirements;
-
-certificate configuration;
-
-metadata location.
+Important values to verify:  
+- ACS endpoint;  
+- entity ID;  
+- signing requirements;  
+- certificate configuration;  
+- metadata location.  
 
 refer to the [PySAML2 config documentation](https://pysaml2.readthedocs.io/en/latest/howto/config.html) if you need to change any values in it.
 
@@ -155,3 +148,75 @@ execute:
 ```bash
 docker compose down
 ```
+## Keycloak setup
+
+## 1) Import docker-compose file with keycloak
+
+from the simone-developement-keycloak branch import the docker-compose.yml file
+
+## 2) rebuild the project
+
+execute:
+```bash
+docker compose up --build
+```
+
+This will rebuild the project and automatically add the keycloak volume for data persistence and install all the needed tools to run keycloak locally. 
+Once the installation is done wait until keycloak completes loading.
+
+## 3) log in keycloak
+
+go to:
+```bash
+http://localhost:8080/
+```
+and enter with the default credentials (you can change them after)
+```bash
+user: admin
+pass: admin
+```
+## 4) configure keycloak
+
+the default configuration is in the simone-developement-keycloak branch as:
+```bash
+http___127.0.0.1_54321_saml_sp.json
+```
+download it then export it once you've logged in keycloak
+
+this will generate a realm and its related setting
+
+optionally you can set your own settings, make sure to create an appropriate realm, correcly configure it with our exerplaza sp and create the correct client scopes and maps and make sure the sp is correcly configured to work with it.
+
+## 5) export the keycloak metadata 
+
+go to the keycloak metadata endpoint and copy the metadata
+
+then go to the directory within exerplaza named:
+```directory
+exerplaza/backend/saml_configuration/metadata/
+```
+and copy it within the idp_metadata.xml file:
+```file
+idp_metadata.xml
+```
+remember to import the certificate for signing
+
+## 6) begin idp testing
+
+now that you've connected keycloak to exerplaza you can test
+
+you can find a script to generate a test user in
+```bash
+exerplaza/backend/saml_configuration/scripts/
+```
+you can run it with:
+```bash
+docker compose exec -it web exerplaza/backend/saml_configuration/scripts/test_user.py
+```
+make sure to define a user with the same email in keycloak too by clicking users.
+
+## changing settings
+
+to change the exerplaza sp settings you must change the saml_sp_config you can find it in exerplaza/backend/saml_configuration make sure you follow the guidelines in [PySAML2 config documentation](https://pysaml2.readthedocs.io/en/latest/howto/config.html)
+
+to apply any setting changes to exerplaza sp you must restart the project, do not keep the project running if you change any settings

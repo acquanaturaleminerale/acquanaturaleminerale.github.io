@@ -1,222 +1,308 @@
 # Setup
 
-## Initial Setup
+## Prerequisites
 
-## 0) Make sure you pull the correct branch
+### Use a branch that contains the SAML implementation
 
-At this moment the main branch does not have the saml implementation
-so make sure the branch you pull does have the implementation
-currently the simone-developement branch is the one that should be pulled as it has the updated full implementation.
-make sure to git pull the branch.
+At the time of writing, the main branch does not include the SAML implementation. Make sure you pull a branch that does.
+The implementation described in this documentation is currently available in the `simone-developement` branch.
 
-Important: the current implementation of saml in exerplaza relies on Pysaml2, refer to the [PySAML2 documentation](https://pysaml2.readthedocs.io/) for any questions regarding the library.
+After switching to the correct branch, pull the latest changes before starting the setup process.
 
-## 1) Configure environment variables
+!!! note
 
-Before starting the application, configure the SAML-related variables inside .env.
-example:
+```
+Exerplaza’s current SAML implementation is based on PySAML2. If you need additional information about library behaviour or configuration, refer to the [PySAML2 documentation](https://pysaml2.readthedocs.io/).
+```
+
+---
+
+## 1. Configure environment variables
+
+Before starting the application, configure the SAML-related variables in the `.env` file.
+
+Example:
 
 ```env
 SAML_BASE_URL=http://127.0.0.1:54321
 SAML_DEBUG=true
 SAML_LOG_LEVEL=DEBUG
-SAML_SECRET=0123456789 #temporary value
+SAML_SECRET=0123456789
 ```
 
-**Variable description**
+The initial `SAML_SECRET` value can be temporary. It will be replaced later with a cryptographically generated secret.
 
-| Variable | Purpose | Development value |
-|---|---|---|
-| `SAML_BASE_URL` | Public URL of the Service Provider. Must match the URL exposed by Flask and the URL configured in the IdP. | `http://127.0.0.1:54321` |
-| `SAML_DEBUG` | Enables PySAML2 internal debugging logs. Useful during development, should generally be disabled in production. | `true` |
-| `SAML_LOG_LEVEL` | Controls the verbosity of SAML-related logs. For production should be "INFO" | `DEBUG` |
-| `SAML_SECRET` | Secret used by PySAML2. Generate a random value during initialization and replace it after setup. | generated value |
+### Variable reference
 
-SAML_BASE_URL must match the one shown on browser when acessing the exerplaza home page  
-SAML_DEBUG can be either true or false  
-SAML_LOG_LEVEL can be  "DEBUG", "INFO", "WARNING", "ERROR" or "CRITICAL" for production INFO is raccomanded  
+| Variable         | Purpose                                                                                                                                  | Development value        |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| `SAML_BASE_URL`  | Public base URL of the Service Provider. It must match the URL used to access Exerplaza and the URL configured in the Identity Provider. | `http://127.0.0.1:54321` |
+| `SAML_DEBUG`     | Enables PySAML2 debug mode. Useful during development, but generally not recommended in production.                                      | `true`                   |
+| `SAML_LOG_LEVEL` | Controls the verbosity of SAML-related logs. Valid values are `DEBUG`, `INFO`, `WARNING`, `ERROR`, and `CRITICAL`.                       | `DEBUG`                  |
+| `SAML_SECRET`    | Secret used by PySAML2 to sign and protect internal SAML state. Replace the temporary value after generating the final secret.           | generated later          |
 
-At this stage SAML_SECRET can contain a temporary value. It will be replaced later after generating the final secret.
+Notes:
 
-## 2) Start the docker environment
+* `SAML_BASE_URL` must match the URL shown in the browser when accessing the Exerplaza home page.
+* `SAML_DEBUG` can be set to either `true` or `false`.
+* In production, `SAML_LOG_LEVEL=INFO` is recommended unless deeper debugging is required.
 
-By default the system dependencies and the necessary libraries for the correct initalization of the saml implementation should be
-already present within the container however the system will warn you if it they are not present.
+---
 
-Initialize the application containers:
+## 2. Start the Docker environment
+
+Start the application containers:
+
 ```bash
 docker compose up
 ```
-This ensures that:  
-- dependencies are installed;  
-- the application environment exists;  
-- required services are available.  
 
-Be aware that the saml system at this stage is not yet configured and while you can reach it endpoints it
-will not run even if you do.
+The Docker environment should already contain the system dependencies and Python libraries required by the SAML implementation. If a required dependency is missing, the application will fail during startup validation or SAML initialization.
 
-## 3) Generate Service Provider certificates
+Starting the containers ensures that:
 
-execute:
+* the application environment is available;
+* required services are running;
+* SAML-related commands can be executed inside the `web` container.
+
+!!! note
+
+```
+At this stage the SAML system is not fully configured yet. The endpoints may exist, but SAML authentication will not work until the remaining setup steps are completed.
+```
+
+---
+
+## 3. Generate Service Provider certificates
+
+Run the certificate generation script:
+
 ```bash
 docker compose exec -it web bash exerplaza/backend/saml_configuration/scripts/cert_generator.sh
 ```
-the script generates inside certs in saml/configuration: 
-```structure
-saml_configuration/
-└── certs/
-    └── next/
-        ├── sp-cert.pem
-        └── sp-key.pem
+
+The script generates a new certificate and private key inside the `next/` subdirectory:
+
+```text
+exerplaza/backend/saml_configuration/certs/
+└── next/
+    ├── sp-cert.pem
+    └── sp-key.pem
 ```
-The generated files are used by the Service Provider to sign SAML messages.
 
-The script also performs validation checks to ensure:  
-- the certificate is readable;  
-- the certificate has not expired;  
-- the private key matches the certificate.  
+These files are used by the Service Provider to sign SAML messages.
 
-The script will also tell you the location on generated files.
+The script also performs validation checks to ensure that:
 
-## 4) Extract generated files 
+* the certificate can be read correctly;
+* the certificate is not already expired;
+* the private key matches the certificate.
 
-Extract generated files from next to certs.
+At the end of the process, the script prints the location of the generated files and basic certificate details.
 
-This ensures the certificate/key pair is hooked up to the system.
+---
 
-## 5) Generate the SAML secret
+## 4. Move the generated certificate pair into the active certificate location
+
+After generating the files, move or copy them from `certs/next/` into the active certificate directory expected by the application:
+
+```text
+exerplaza/backend/saml_configuration/certs/sp-cert.pem
+exerplaza/backend/saml_configuration/certs/sp-key.pem
+```
+
+The current runtime configuration in `sp_settings.py` expects the certificate and private key at those exact paths.
+
+This step is required to ensure that the generated certificate pair is actually used by the Service Provider.
+
+---
+
+## 5. Generate the SAML secret
 
 Generate a cryptographically random secret:
+
 ```bash
 docker compose exec -it web openssl rand -hex 32
 ```
-Replace the value of SAML_SECRET in .env with the generated output.
+
+Replace the value of `SAML_SECRET` in `.env` with the generated output.
 
 Example:
+
 ```env
 SAML_SECRET=<generated-value>
 ```
-The secret should remain stable between deployments. Changing it invalidates existing SAML state
 
-## 6) Configure Identity Provider metadata
+The secret should remain stable across deployments. Changing it invalidates existing SAML state and may break in-flight or persisted SAML-related data.
 
-The existing idp_metadata.xml file present in exerplaza/backend/saml_configuration/metadata/
-is the working idp metadata used with the local keycloak idp. It will only work with said idp
-so remove it if you are using your own configured idp.
+---
+
+## 6. Configure Identity Provider metadata
 
 Place the Identity Provider metadata file inside:
-```directory
+
+```text
 exerplaza/backend/saml_configuration/metadata/
 ```
-The expected file is, so make sure it is named that way:
-```file
+
+The file must be named:
+
+```text
 idp_metadata.xml
 ```
-The metadata contains information required by the Service Provider to communicate with the Identity Provider, including:  
-entity identifier;  
-endpoints;  
-certificates.  
 
-## 7) Verify Service Provider configuration
+The metadata contains the information required by the Service Provider to communicate with the Identity Provider, including:
 
-Ensure that the file in:
-```file
-saml_sp_config.py
+* the IdP entity identifier;
+* SSO / SAML endpoints;
+* signing certificates and related trust material.
+
+### Default metadata file
+
+The repository already contains an `idp_metadata.xml` file used during development with the local Keycloak Identity Provider. That file is only valid for that specific Keycloak configuration.
+
+If you are using a different Identity Provider, replace it with the correct metadata for your IdP.
+
+---
+
+## 7. Verify the Service Provider configuration
+
+The Service Provider configuration is defined in:
+
+```text
+exerplaza/backend/saml_configuration/saml_sp_config.py
 ```
-you can find it in:
-```directory
-exerplaza/backend/saml_configuration/
-```
-matches the configured Identity Provider.
 
-The default configuration was tested with the Keycloak Identity Provider used during development.
+Review it and ensure that it matches the Identity Provider you intend to use.
 
-Important values to verify:  
-- ACS endpoint;  
-- entity ID;  
-- signing requirements;  
-- certificate configuration;  
-- metadata location.  
+The default configuration was tested against the local Keycloak Identity Provider used during development, so if you are using a different IdP you may need to adjust the configuration accordingly.
 
-refer to the [PySAML2 config documentation](https://pysaml2.readthedocs.io/en/latest/howto/config.html) if you need to change any values in it.
+Important values to verify include:
 
-## 8) Shut down the container
+* the ACS endpoint;
+* the SP entity ID;
+* signing requirements;
+* certificate and key configuration;
+* metadata location;
+* any IdP-specific expectations required by your environment.
 
-To complete the configuration you must either shut down the container or restart it
+If you need to modify the SP configuration, refer to the [PySAML2 configuration documentation](https://pysaml2.readthedocs.io/en/latest/howto/config.html).
 
-execute:
+---
+
+## 8. Restart the application
+
+After updating the environment variables, certificates, metadata, or SAML configuration, restart the application so the new values are picked up correctly.
+
+You can stop the running containers with:
+
 ```bash
 docker compose down
 ```
-## Keycloak setup
 
-## 1) Import docker-compose file with keycloak
+and then start them again when needed.
 
-from the simone-developement-keycloak branch import the docker-compose.yml file
+This is necessary because the SAML configuration is loaded from environment variables and files, and the Service Provider configuration is cached by the Flask application once initialized.
 
-## 2) rebuild the project
+---
 
-execute:
+# Local Keycloak setup for development testing
+
+This section is only required if you want to reproduce the local Keycloak-based Identity Provider environment used during development and testing.
+
+## 1. Import the Keycloak Docker configuration
+
+From the `simone-developement-keycloak` branch, import the `docker-compose.yml` file that includes the Keycloak service.
+
+## 2. Rebuild and start the project
+
+Run:
+
 ```bash
 docker compose up --build
 ```
 
-This will rebuild the project and automatically add the keycloak volume for data persistence and install all the needed tools to run keycloak locally. 
-Once the installation is done wait until keycloak completes loading.
+This rebuilds the project, adds the Keycloak service and its persistence volume, and installs the components required to run Keycloak locally.
 
-## 3) log in keycloak
+Wait until Keycloak finishes booting before continuing.
 
-go to:
-```bash
-http://localhost:8080/
+## 3. Log in to Keycloak
+
+Open:
+
+`http://localhost:8080/`
+
+Use the default credentials:
+
+```text
+username: admin
+password: admin
 ```
-and enter with the default credentials (you can change them after)
-```bash
-user: admin
-pass: admin
-```
-## 4) configure keycloak
 
-the default configuration is in the simone-developement-keycloak branch as:
-```bash
+You can change these credentials afterwards if needed.
+
+## 4. Import the Keycloak realm configuration
+
+The default Keycloak configuration used during development is available in the `simone-developement-keycloak` branch as:
+
+```text
 http___127.0.0.1_54321_saml_sp.json
 ```
-download it then export it once you've logged in keycloak
 
-this will generate a realm and its related setting
+Import that file into Keycloak after logging in.
+This creates the realm and the related settings used during development.
 
-optionally you can set your own settings, make sure to create an appropriate realm, correcly configure it with our exerplaza sp and create the correct client scopes and maps and make sure the sp is correcly configured to work with it.
+You can also configure your own Keycloak realm manually, but in that case make sure that:
 
-## 5) export the keycloak metadata 
+* the realm is configured correctly for Exerplaza as a SAML Service Provider;
+* the necessary client scopes and attribute mappings are present;
+* the Service Provider configuration in Exerplaza matches the Keycloak configuration.
 
-go to the keycloak metadata endpoint and copy the metadata
+## 5. Export the Keycloak metadata
 
-then go to the directory within exerplaza named:
-```directory
-exerplaza/backend/saml_configuration/metadata/
+Once Keycloak is configured, open its SAML metadata endpoint and copy the generated metadata.
+
+Then replace the metadata file used by Exerplaza:
+
+```text
+exerplaza/backend/saml_configuration/metadata/idp_metadata.xml
 ```
-and copy it within the idp_metadata.xml file:
-```file
-idp_metadata.xml
+
+Make sure the metadata includes the signing certificate expected by the Service Provider.
+
+## 6. Begin local IdP testing
+
+At this point you can test the SAML flow locally against Keycloak.
+
+A helper script for creating a local Exerplaza test user is available at:
+
+```text
+exerplaza/backend/saml_configuration/scripts/test_user.py
 ```
-remember to import the certificate for signing
 
-## 6) begin idp testing
+Run it inside the container:
 
-now that you've connected keycloak to exerplaza you can test
-
-you can find a script to generate a test user in
 ```bash
-exerplaza/backend/saml_configuration/scripts/
+docker compose exec -it web python exerplaza/backend/saml_configuration/scripts/test_user.py
 ```
-you can run it with:
-```bash
-docker compose exec -it web exerplaza/backend/saml_configuration/scripts/test_user.py
+
+Make sure a Keycloak user with the same email address also exists, otherwise the SAML login will succeed at the IdP level but fail during Exerplaza’s local user lookup.
+
+---
+
+# Changing SAML settings
+
+To modify the Exerplaza Service Provider settings, edit:
+
+```text
+exerplaza/backend/saml_configuration/saml_sp_config.py
 ```
-make sure to define a user with the same email in keycloak too by clicking users.
 
-## changing settings
+If you need to change runtime validation behaviour or file paths, also review:
 
-to change the exerplaza sp settings you must change the saml_sp_config you can find it in exerplaza/backend/saml_configuration make sure you follow the guidelines in [PySAML2 config documentation](https://pysaml2.readthedocs.io/en/latest/howto/config.html)
+```text
+exerplaza/backend/saml_configuration/sp_settings.py
+```
 
-to apply any setting changes to exerplaza sp you must restart the project, do not keep the project running if you change any settings
+After changing the SAML configuration, restart the project so the new configuration is loaded correctly. Do not rely on hot changes while the application is already running.
+

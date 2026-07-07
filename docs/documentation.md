@@ -1,6 +1,6 @@
-# documentation
+# Documentation
 
-## overview
+## Overview
 
 This module introduces SAML-based Single Sign-On authentication capabilities into Exerplaza.
 

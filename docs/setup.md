@@ -244,7 +244,7 @@ You can change these credentials afterwards if needed.
 The default Keycloak configuration used during development is available in the `simone-developement-keycloak` branch as:
 
 ```text
-http___127.0.0.1_54321_saml_sp.json
+realm-export.json
 ```
 
 Import that file into Keycloak after logging in.

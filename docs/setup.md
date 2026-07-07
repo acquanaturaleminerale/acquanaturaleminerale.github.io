@@ -4,9 +4,12 @@
 
 ## 0) Make sure you pull the correct branch
 
-currently the main branch does not have the saml implementation
-so the saml implementation is currently only under the simone-developement branch
+At this moment the main branch does not have the saml implementation
+so make sure the branch you pull does have the implementation
+currently the simone-developement branch is the one that should be pulled as it has the updated full implementation.
 make sure to git pull the branch.
+
+Important: the current implementation of saml in exerplaza relies on Pysaml2, refer to the [PySAML2 documentation](https://pysaml2.readthedocs.io/) for any questions regarding the library.
 
 ## 1) Configure environment variables
 
@@ -20,12 +23,12 @@ SAML_LOG_LEVEL=DEBUG
 SAML_SECRET=0123456789 #temporary value
 ```
 
-# Variable description
+**Variable description**
 | Variable | Purpose | Development value |
 |---|---|---|
 | `SAML_BASE_URL` | Public URL of the Service Provider. Must match the URL exposed by Flask and the URL configured in the IdP. | `http://127.0.0.1:54321` |
 | `SAML_DEBUG` | Enables PySAML2 internal debugging logs. Useful during development, should generally be disabled in production. | `true` |
-| `SAML_LOG_LEVEL` | Controls the verbosity of SAML-related logs. | `DEBUG` |
+| `SAML_LOG_LEVEL` | Controls the verbosity of SAML-related logs. For production should be "INFO" | `DEBUG` |
 | `SAML_SECRET` | Secret used by PySAML2. Generate a random value during initialization and replace it after setup. | generated value |
 
 SAML_BASE_URL must match the one shown on browser when acessing the exerplaza home page
@@ -51,7 +54,8 @@ dependencies are installed;
 the application environment exists;
 required services are available.
 
-Be aware that the saml system at this stage is not yet configured and will not run if you try to reach one if its endpoints.
+Be aware that the saml system at this stage is not yet configured and while you can reach it endpoints it
+will not run even if you do.
 
 ## 3) Generate Service Provider certificates
 
@@ -121,9 +125,6 @@ endpoints;
 
 certificates.
 
-For local testing, the simone-developement-keycloak branch contains the idp configuration used during development.
-you can find it in the branch's exerplaza/backend/saml_configuration/metadata/
-
 ## 7) Verify Service Provider configuration
 
 Ensure that:
@@ -146,7 +147,7 @@ certificate configuration;
 
 metadata location.
 
-refer to the pysaml2 documentation if you need to change any values in it.
+refer to the [PySAML2 config documentation](https://pysaml2.readthedocs.io/en/latest/howto/config.html/) if you need to change any values in it.
 
 ## 7) Shut down the container
 

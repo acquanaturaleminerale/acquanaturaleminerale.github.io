@@ -23,7 +23,7 @@ SAML_LOG_LEVEL=DEBUG
 SAML_SECRET=0123456789 #temporary value
 ```
 
-**Variable description**
+# Variable description
 | Variable | Purpose | Development value |
 |---|---|---|
 | `SAML_BASE_URL` | Public URL of the Service Provider. Must match the URL exposed by Flask and the URL configured in the IdP. | `http://127.0.0.1:54321` |

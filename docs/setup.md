@@ -279,11 +279,18 @@ You can also configure your own Keycloak realm manually, but in that case make s
 
 The SAML response must contain the user's email address.
 
-The provided Keycloak configuration includes the required attribute mapping. If using another IdP, ensure that an email attribute is released and that it matches the attribute expected by Exerplaza.
+The provided Keycloak configuration includes the required attribute mapping. If using another IdP, ensure that an email attribute is released and that it matches the attribute expected by Exerplaza. 
+
+Refer to the keycloak documentation if configuring your own local keycloak idp [keycloak documentation](https://www.keycloak.org/documentation)
 
 ## 5. Export the Keycloak metadata
 
 Once Keycloak is configured, open its SAML metadata endpoint and copy the generated metadata.
+
+Keycloak exposes the SAML Identity Provider metadata through its descriptor endpoint:
+
+```text
+http://<keycloak-host>:<port>/realms/<realm-name>/protocol/saml/descriptor
 
 Then replace the metadata file used by Exerplaza:
 

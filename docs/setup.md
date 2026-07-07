@@ -23,7 +23,8 @@ SAML_LOG_LEVEL=DEBUG
 SAML_SECRET=0123456789 #temporary value
 ```
 
-# Variable description
+**Variable description**
+
 | Variable | Purpose | Development value |
 |---|---|---|
 | `SAML_BASE_URL` | Public URL of the Service Provider. Must match the URL exposed by Flask and the URL configured in the IdP. | `http://127.0.0.1:54321` |
@@ -149,7 +150,7 @@ metadata location.
 
 refer to the [PySAML2 config documentation](https://pysaml2.readthedocs.io/en/latest/howto/config.html) if you need to change any values in it.
 
-## 7) Shut down the container
+## 8) Shut down the container
 
 To complete the configuration you must either shut down the container or restart it
 

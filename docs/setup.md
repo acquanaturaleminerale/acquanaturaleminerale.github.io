@@ -9,11 +9,9 @@ The implementation described in this documentation is currently available in the
 
 After switching to the correct branch, pull the latest changes before starting the setup process.
 
-!!! note
+!!! note:
 
-```
 Exerplaza’s current SAML implementation is based on PySAML2. If you need additional information about library behaviour or configuration, refer to the [PySAML2 documentation](https://pysaml2.readthedocs.io/).
-```
 
 ---
 

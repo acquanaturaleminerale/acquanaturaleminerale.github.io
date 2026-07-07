@@ -1,16 +1,36 @@
-# Documentation
+# documentation
 
-## Overview
+## overview
 
-This project introduces SAML-based Single Sign-On (SSO) authentication into Exerplaza.
+This module introduces SAML-based Single Sign-On authentication capabilities into Exerplaza.
 
-The implementation adds support for authentication through an external Identity Provider (IdP) while preserving the existing authentication system. SAML authentication is implemented as an additional login option alongside the existing authentication mechanisms.
+The implementation acts as a SAML Service Provider (SP) integrated directly into the existing Flask application using PySAML2. It allows users to authenticate through an external Identity Provider (IdP) while integrating with the existing user management and session mechanisms. The SAML login flow is exposed through the existing login page by adding an additional entry point that redirects users to the SAML authentication endpoint.
 
-The system acts as a SAML Service Provider (SP) and uses PySAML2 to handle SAML communication with external Identity Providers.
+The current implementation provides:
 
-The implementation currently supports authentication with a single Identity Provider and has been validated through automated tests and end-to-end testing with a local Keycloak Identity Provider.
+- SAML authentication through a configured Identity Provider
+- Service Provider metadata generation
+- SAML authentication request generation
+- Assertion Consumer Service (ACS) processing
+- Integration with the existing user session management
+- Database-backed SAML authentication request lifecycle tracking
+- Replay protection mechanisms through single-use request consumption and expiration validation
+- Local certificate generation and SAML environment setup utilities for testing and deployment configuration
 
----
+The implementation currently supports a single configured Identity Provider and represents a complete SAML authentication flow integration within the current project scope.
+
+The SAML configuration is loaded during application startup and is considered static during runtime. This ensures that all application workers operate using a consistent Service Provider configuration. Any changes to the SAML configuration require rebuilding or restarting the application environment.
+
+## Current limitations
+
+The current implementation demonstrates the complete SAML authentication flow and provides a functional basis for further production validation. Before production use, additional validation and hardening would be required, including:
+
+- Additional security hardening and review
+- Extended handling of edge cases and failure scenarios
+- Validation against the target production Identity Provider environment
+- Additional deployment-specific testing and operational validation
+
+The current implementation is designed around a single configured Identity Provider. Support for multiple Identity Providers or federation scenarios is not included in the current scope.
 
 # Architecture
 

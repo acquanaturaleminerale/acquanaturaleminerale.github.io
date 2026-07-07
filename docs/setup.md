@@ -12,6 +12,8 @@
     
 This guide explains how to initialize and configure the SAML Service Provider (SP) implementation used by Exerplaza.
 
+A minimal understanding of the SAML authentication flow is recommended before following this guide. In particular, it is useful to be familiar with the roles of the Service Provider (SP), Identity Provider (IdP), metadata exchange, and Assertion Consumer Service (ACS) endpoint.
+
 The goal of this setup is to reproduce the development testing environment and verify the complete SAML authentication flow locally.
 
 The documented setup reproduces the development environment used for testing:

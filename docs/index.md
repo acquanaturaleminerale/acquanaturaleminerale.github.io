@@ -1,15 +1,13 @@
-# introduction
+# Introduction
 
-I am Ferro Simone, a scomputer engineering bachelor's student at the university of Padua.
-This website serves as a repository to hold all the documentation of my work in exerplaza and as my thesis for my bachelor's degree.
+My name is Simone Ferro, and I am a Bachelor's student in Computer Engineering at the University of Padua.
 
-# credits
+This website contains the documentation of my work on the Exerplaza project and serves as the written component of my Bachelor's thesis. Its purpose is to describe the work carried out during my involvement in the project, including the technical decisions, implementations, and results achieved.
 
-these are all the people who helped me during my involvement in this project:
+# Credits
 
-my thesis supervisor Damiano varagnolo
+I would like to thank all the people who contributed to and supported my work throughout this project:
 
-Taha Shieenavaz and Andrea Mutti our 2 senior developers working on exerplaza
-
-Marco Naimoli part of the technical administrative staff of the university of Padua.
-
+* **Damiano Varagnolo**, my thesis supervisor, for his guidance and academic support throughout the development of this work.
+* **Taha Shieenavaz** and **Andrea Mutti**, the two senior developers working on Exerplaza, for their technical support and collaboration during the project.
+* **Marco Naimoli**, member of the technical administrative staff of the University of Padua, for his support and assistance during the developement.

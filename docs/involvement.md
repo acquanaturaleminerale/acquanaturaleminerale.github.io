@@ -24,43 +24,56 @@ The final result is a functional SAML authentication prototype integrated alongs
 
 ### Project onboarding and analysis
 
-At the beginning of my involvement, I had to become familiar with an existing project and its development environment. Since I was joining an already active codebase, my first objective was to understand the structure of Exerplaza, its technologies, and the workflow used by the development team.
+At the beginning of my involvement, I had to become familiar with an existing project and its development environment. Since I was joining an already active codebase, my first objective was to understand the structure of Exerplaza, the technologies used by the project, and the workflow followed by the development team.
 
-I started by configuring the local development environment, learning the Docker-based setup, and resolving the initial configuration issues required to run the project locally. This phase allowed me to understand the relationship between the different services and how the application was structured.
+The first phase focused on setting up and understanding the local development environment. I configured the Docker-based setup, resolved initial environment and configuration issues, and learned how the different services composing the application interacted with each other. This process allowed me to gain familiarity with the project's development workflow and the infrastructure required to run Exerplaza locally.
 
-After successfully setting up the environment, I analyzed the project architecture, reviewed the existing documentation, studied the directory structure, and examined the technologies used by Exerplaza. This analysis was necessary to understand where and how a new authentication mechanism could be integrated without disrupting the existing system.
+Once the environment was correctly configured, I analyzed the existing codebase by reviewing the available documentation, studying the project structure, examining the application architecture, and understanding the existing authentication flow. This analysis was necessary to identify where and how a new authentication mechanism could be introduced while preserving the existing system and avoiding unnecessary architectural changes.
 
 ---
 
 ### SAML research and architectural decisions
 
-The initial task was to learn how to introduce SAML authentication into Exerplaza. Before starting implementation, I researched the SAML protocol, its authentication flow, its security requirements, and the available implementation strategies.
+The initial task was to determine how SAML authentication could be introduced into Exerplaza. Before beginning implementation, I studied the SAML protocol, its authentication flow, the role of Service Providers and Identity Providers, and the security requirements involved in a correct implementation.
 
-During this phase, I evaluated multiple approaches:
+I first evaluated possible implementation strategies and available tools. Based on the initial analysis and discussions with the development team, I identified two main approaches: introducing an external SAML authentication layer through dedicated software, or implementing the Service Provider directly inside the existing application using a Python library.
 
-* using dedicated SAML authentication software such as Shibboleth or Apache Mellon;
-* implementing the Service Provider directly inside the application using a Python library.
+Several Python libraries were considered, including Python3-SAML and django-saml2, but they were discarded due to framework incompatibility, project mismatch, or limitations regarding the required Service Provider implementation. PySAML2 was selected as the most suitable library because it provided a SAML Service Provider implementation compatible with the existing Flask and uWSGI-based application environment.
 
-The software-based approach offered advantages in terms of standardization, maintainability, and reduced custom security logic. However, after discussing the available options with the development team and evaluating the project requirements, I decided that a direct PySAML2 integration was the most suitable approach for the current scope of the project.
+In parallel, I evaluated an alternative architecture based on dedicated SAML authentication software, such as Shibboleth or Apache Mellon, acting as an external authentication layer. This approach provided several advantages, including the use of mature enterprise-oriented software, standardized federation support, reduced responsibility for implementing SAML-specific security logic, and easier long-term maintenance.
 
-This choice allowed the SAML functionality to remain directly integrated into Exerplaza, avoiding additional infrastructure complexity while providing full control over the authentication flow.
+The different approaches were evaluated through discussions with the development team and with external technical guidance. These discussions helped identify the strengths and limitations of each solution, particularly regarding maintainability, integration complexity, and compatibility with the existing project architecture.
+
+However, after evaluating the alternatives against the project constraints, I concluded that integrating an external authentication layer would have required significant changes to the existing application architecture. Exerplaza already handled user sessions, authentication state, and user management internally, meaning that introducing an additional authentication component through middleware or external software would have required substantial integration logic and modifications to the existing request and session flow, particularly due to overlapping responsibilities with the existing Flask-based architecture.
+
+Additionally, introducing an external authentication layer would have increased the complexity of the development environment by requiring contributors to understand and maintain another infrastructure component alongside the existing application stack.
+
+After evaluating both approaches against the constraints of the existing project, including the application architecture, deployment environment, infrastructure constraints, and available development scope, I selected a direct Python-based implementation using PySAML2. This approach allowed SAML authentication to be introduced alongside the existing authentication system while avoiding large architectural changes that were not feasible within the project timeframe.
 
 ---
 
 ### Implementation
 
-The implementation phase started with the creation of a minimal prototype using a single Identity Provider. This allowed me to validate my understanding of the SAML flow before considering a more complex federated setup.
+The implementation phase started with the creation of a minimal prototype using a single Identity Provider. This approach allowed me to validate my understanding of the SAML authentication flow before introducing additional complexity related to federation and multiple Identity Providers.
 
-I integrated PySAML2 into the project environment, configured the Service Provider, created the required SAML routes and templates, and implemented the authentication flow inside the existing Flask application.
+I integrated PySAML2 into the project environment, configured the Service Provider, created the required SAML routes and templates, and implemented the authentication flow inside the existing Flask application. During this phase, I adapted the library configuration to match the existing project structure and deployment environment while maintaining compatibility with the existing authentication system.
 
 During development, I also:
 
-* introduced SAML-specific configuration through environment variables;
-* created scripts for certificate generation and validation;
-* integrated SAML configuration files into the existing project structure;
-* implemented dedicated error handling for authentication failures.
+introduced SAML-specific configuration through environment variables;
+created scripts for certificate generation and validation;
+integrated SAML configuration files into the existing project structure;
+implemented dedicated error handling for authentication failures.
 
-After completing the initial implementation, I configured a local Keycloak Identity Provider to perform end-to-end testing of the complete authentication flow.
+After completing the initial implementation, I learned how to configure and use a local Keycloak Identity Provider for end-to-end testing of the complete authentication flow. While the initial implementation successfully passed automated tests, end-to-end testing revealed a limitation related to the way PySAML2 handled internal authentication state.
+
+PySAML2's default request state handling relied on internal state storage that was not suitable for the Exerplaza deployment environment, particularly due to the use of multiple uWSGI workers. As a result, valid SAML responses could be rejected because the authentication state created during the initial request was not consistently available during the response validation phase.
+
+The implementation was progressively reorganized into separate modules responsible for SAML services, request tracking, configuration handling, and route management, improving separation of responsibilities and maintainability.
+
+To address this limitation, I implemented a database-backed SAML request tracking system. This moved the management of SAML authentication transactions from transient application state to persistent storage, ensuring consistency across different workers. The system also provides additional protection mechanisms by tracking request identifiers and validating request expiration. The system also provides additional protection mechanisms by tracking request identifiers, validating request expiration, and preventing reuse of previously consumed authentication requests.
+
+After integrating this solution, I corrected the remaining implementation issues, completed end-to-end testing with the local Identity Provider, and created a second iteration of automated tests focused on validating overall system behaviour and interactions between components rather than only testing individual functions. Finally, I performed a code refactoring phase, added documentation comments, and completed a functional SAML authentication prototype integrated alongside the existing Exerplaza authentication system.
 
 ---
 

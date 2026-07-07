@@ -79,40 +79,44 @@ After integrating this solution, I corrected the remaining implementation issues
 
 ### Security and robustness improvements
 
-During end-to-end testing, I discovered that the initial implementation, despite passing unit tests, was not sufficiently robust for realistic usage scenarios.
+During end-to-end testing, I discovered that the initial implementation, despite passing automated tests, was not sufficiently robust for realistic deployment scenarios.
 
-The main issue was related to PySAML2's internal handling of authentication request state. The library relied on temporary internal state that was not persistent across multiple workers or application restarts, causing valid SAML responses to be rejected in certain situations.
+The main issue was related to PySAML2's default handling of authentication request state. The default library state management relied on temporary storage that was not shared across multiple workers and was not suitable for scenarios involving application restarts.
 
-After investigating the problem, I redesigned this part of the system by moving request tracking responsibility into Exerplaza's database layer. I implemented persistent storage for SAML request information and added replay protection mechanisms by tracking request identifiers and validating their lifetime.
+After investigating the problem, I redesigned this part of the system by moving SAML request tracking responsibility into Exerplaza's database layer. I implemented persistent storage for SAML authentication requests and added validation mechanisms based on request identifiers, expiration timestamps, and single-use consumption of authentication requests.
 
-This improvement allowed the authentication flow to become independent from temporary library state and made the implementation more suitable for a multi-worker deployment environment.
+This improvement removed the dependency on temporary library-managed state and made the authentication flow compatible with Exerplaza's multi-worker deployment environment. It also strengthened the implementation against authentication flow issues such as expired or reused SAML requests.
+
+Additional robustness improvements were introduced through automated testing of the main authentication scenarios. The test suite was expanded to validate successful authentication flows, invalid sessions, failed SAML responses, missing users, disabled accounts, metadata availability, and unsafe redirect handling. These tests focused on verifying the behaviour of the system as a whole rather than only testing individual functions.
+
+The current implementation represents a functional prototype of SAML authentication integrated into Exerplaza, supporting authentication through a single Identity Provider. While the authentication flow has been validated through automated tests and end-to-end testing with a local Identity Provider, additional work would be required before considering the system production-ready. This would include further validation with the target Identity Provider environment, potential extension to additional federation scenarios, testing within the production deployment environment, and a more extensive security review.
 
 ---
 
 ### Testing and documentation
 
-Throughout development, I used automated testing and manual end-to-end validation to verify the implementation.
+Throughout development, I used automated testing and manual end-to-end validation to verify the correctness and reliability of the implementation.
 
-I created multiple test iterations:
+The testing process evolved through multiple iterations:
 
-* initial functional tests to validate individual components;
-* improved behavioural tests focused on the overall authentication flow;
-* end-to-end tests using a local Keycloak Identity Provider.
+initial tests focused on validating individual routes and components;
+improved behavioural tests focused on interactions between different parts of the authentication flow;
+end-to-end validation using a local Keycloak Identity Provider.
 
-The testing process was also fundamental for discovering weaknesses in the initial design and improving the reliability of the implementation.
+Testing was also essential for identifying weaknesses in the initial design, particularly during the transition from isolated component validation to realistic authentication flow testing.
 
-After completing the prototype, I performed code cleanup and refactoring, added comments throughout the implementation, and produced documentation describing:
+After completing the prototype, I performed a final refactoring and cleanup phase, added documentation comments throughout the implementation, and documented:
 
-* the setup procedure;
-* the required configuration;
-* the local Identity Provider environment;
-* the limitations of the current implementation.
+the setup procedure;
+the required SAML configuration;
+the local Identity Provider environment;
+the current scope and limitations of the implementation.
 
 ---
 
 ### Final result and lessons learned
 
-The final result of my work is a working SAML Service Provider prototype integrated into Exerplaza, capable of completing the authentication flow with an external Identity Provider and protected against replay attacks through persistent request tracking.
+The final result of my work is a functional SAML Service Provider prototype integrated into Exerplaza, capable of completing the authentication flow with a single external Identity Provider and implementing replay protection mechanisms through persistent SAML request tracking.
 
 Beyond the technical implementation, this project provided experience in integrating new functionality into an existing software system, evaluating architectural trade-offs, working with authentication and security protocols, and adapting to unexpected challenges during development.
 

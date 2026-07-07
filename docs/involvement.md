@@ -61,10 +61,10 @@ I integrated PySAML2 into the project environment, configured the Service Provid
 
 During development, I also:
 
-introduced SAML-specific configuration through environment variables;
-created scripts for certificate generation and validation;
-integrated SAML configuration files into the existing project structure;
-implemented dedicated error handling for authentication failures.
+introduced SAML-specific configuration through environment variables;  
+created scripts for certificate generation and validation;  
+integrated SAML configuration files into the existing project structure;  
+implemented dedicated error handling for authentication failures.  
 
 After completing the initial implementation, I learned how to configure and use a local Keycloak Identity Provider for end-to-end testing of the complete authentication flow. While the initial implementation successfully passed automated tests, end-to-end testing revealed a limitation related to the way PySAML2 handled internal authentication state.
 
@@ -94,18 +94,18 @@ Throughout development, I used automated testing and manual end-to-end validatio
 
 The testing process evolved through multiple iterations:
 
-initial tests focused on validating individual routes and components;
-improved behavioural tests focused on interactions between different parts of the authentication flow;
-end-to-end validation using a local Keycloak Identity Provider.
+initial tests focused on validating individual routes and components;  
+improved behavioural tests focused on interactions between different parts of the authentication flow;  
+end-to-end validation using a local Keycloak Identity Provider.  
 
 These iterations progressively increased confidence in the implementation by moving from isolated component validation to verification of the complete authentication flow.
 
 After completing the prototype, I performed a final refactoring and cleanup phase, added documentation comments throughout the implementation, and documented:
 
-the setup procedure;
-the required SAML configuration;
-the local Identity Provider environment;
-the current scope and limitations of the implementation.
+the setup procedure;  
+the required SAML configuration;  
+the local Identity Provider environment;  
+the current scope and limitations of the implementation.  
 
 ---
 

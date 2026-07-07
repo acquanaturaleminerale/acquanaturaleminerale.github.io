@@ -147,7 +147,7 @@ certificate configuration;
 
 metadata location.
 
-refer to the [PySAML2 config documentation](https://pysaml2.readthedocs.io/en/latest/howto/config.html/) if you need to change any values in it.
+refer to the [PySAML2 config documentation](https://pysaml2.readthedocs.io/en/latest/howto/config.html) if you need to change any values in it.
 
 ## 7) Shut down the container
 

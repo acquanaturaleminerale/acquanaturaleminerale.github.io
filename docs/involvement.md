@@ -24,7 +24,8 @@ The final result is a functional SAML authentication prototype integrated alongs
 
 !!! note:
 
-    The following detailed involvement log is provided as supplementary documentation of the development process. The previous sections summarize the main contributions, decisions, and final results.
+    The following detailed involvement log is provided as supplementary documentation of the development process.
+    The previous sections summarize the main contributions, decisions, and final results.
 
 ### Project onboarding and analysis
 

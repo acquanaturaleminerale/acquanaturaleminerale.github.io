@@ -1,6 +1,18 @@
 # Setup
 
+!!! warning "Development environment only"
+
+    This setup describes the current development and testing environment for the Saml implementation of Exerplaza.
+    The SAML implementation has not been validated for production deployment yet.
+
+!!! note:
+
+    Exerplaza’s current SAML implementation is based on PySAML2.
+    If you need additional information about library behaviour or configuration, refer to the [PySAML2 documentation](https://pysaml2.readthedocs.io/).
+    
 This guide explains how to initialize and configure the SAML Service Provider (SP) implementation used by Exerplaza.
+
+The goal of this setup is to reproduce the development testing environment and verify the complete SAML authentication flow locally.
 
 The documented setup reproduces the development environment used for testing:
 - Exerplaza as the Service Provider;
@@ -9,11 +21,6 @@ The documented setup reproduces the development environment used for testing:
 
 Using another Identity Provider is supported, but it requires replacing the provided IdP metadata and adapting the Service Provider configuration accordingly.
 The Keycloak setup described later is only a development convenience used during testing and is not a requirement of the SAML implementation.
-
-!!! warning "Development environment only"
-
-    This setup describes the current development and testing environment.
-    The SAML implementation has not been validated for production deployment yet.
 
 Do not use these settings directly in production. Before deploying to production, review:
 - certificate management;
@@ -31,11 +38,6 @@ At the time of writing, the SAML implementation is available in the `simone-deve
 Use the branch containing the latest SAML implementation before following this guide.
 
 After switching to the correct branch, pull the latest changes before starting the setup process.
-
-!!! note:
-
-    Exerplaza’s current SAML implementation is based on PySAML2.
-    If you need additional information about library behaviour or configuration, refer to the [PySAML2 documentation](https://pysaml2.readthedocs.io/).
 
 ---
 
@@ -114,6 +116,8 @@ exerplaza/backend/saml_configuration/certs/
 
 The certificate is used by the Service Provider to sign SAML requests.
 
+The certificate does not authenticate users. It is used for SAML message signing and verification between the SP and IdP.
+
 If the configured Identity Provider requires signed requests, the SP certificate must also be registered inside the IdP configuration.
 
 The script also performs validation checks to ensure that:
@@ -166,6 +170,13 @@ The secret should remain stable across deployments. Changing it invalidates exis
 ### Default metadata file
 
 The repository already contains an `idp_metadata.xml` file used during development with the local Keycloak Identity Provider. That file is only valid for that specific Keycloak configuration. The provided metadata file should work with the Keycloak configuration described later. However, it is recommended to replace it with the metadata provided by the actual Identity Provider, even when using the same IdP software.
+
+The metadata file configures the trust relationship between Exerplaza and the IdP.
+
+However, metadata alone is not enough:
+- the IdP must release the required user attributes;
+- Exerplaza must know how to interpret those attributes;
+- the IdP configuration must match the SP configuration.
 
 If you are using a different Identity Provider, replace it with the correct metadata for your IdP.
 
@@ -310,6 +321,8 @@ The export contains:
 - signing configuration;
 - realm settings.
 
+Importing it recreates the development Keycloak environment used for testing.
+
 Import the realm export into Keycloak after logging in.
 
 The export recreates the development realm configuration, including the SAML client, scopes, and mappings required for testing.
@@ -326,9 +339,11 @@ The provided Keycloak configuration includes the required attribute mapping. If 
 
 Refer to the keycloak documentation if configuring your own local keycloak idp [keycloak documentation](https://www.keycloak.org/documentation)
 
-## 5. Export the Keycloak metadata
+## 5. Retrieve the Keycloak SAML metadata
 
 Once Keycloak is configured, open its SAML metadata endpoint and copy the generated metadata.
+
+The realm export is intended only for development. Do not expose it publicly, as it may contain Identity Provider configuration, client information, and secrets depending on the exported settings.
 
 Keycloak exposes the SAML Identity Provider metadata through its descriptor endpoint:
 
@@ -350,7 +365,9 @@ exerplaza/backend/saml_configuration/metadata/idp_metadata.xml
 
 Make sure the metadata includes the signing certificate expected by the Service Provider.
 
-The default signing certifiacte in the keycloak idp is the one used during testing and should be replaced with your generated one during the setup process
+The metadata contains the Keycloak IdP signing certificate used to verify SAML responses.
+
+If you replace the IdP or change its signing keys, regenerate the metadata and replace this file.
 
 ## 6. Begin local IdP testing
 

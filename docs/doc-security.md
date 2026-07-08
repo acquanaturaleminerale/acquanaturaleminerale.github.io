@@ -1,4 +1,6 @@
-# Configuration
+# Documentation
+
+## Configuration
 
 The SAML integration uses a combination of environment variables and local deployment files to configure the Service Provider.
 

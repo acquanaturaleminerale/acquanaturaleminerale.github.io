@@ -34,7 +34,7 @@ The current implementation is designed around a single configured Identity Provi
 
 # Architecture
 
-## SAML Authentication Flow
+## # SAML Authentication Architecture and Flow
 
 ```mermaid
 sequenceDiagram

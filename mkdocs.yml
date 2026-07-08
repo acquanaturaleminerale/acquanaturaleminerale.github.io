@@ -11,7 +11,8 @@ markdown_extensions:
 
 extra_javascript:
   - https://unpkg.com/mermaid/dist/mermaid.min.js
-
+  - javascripts/mermaid.js
+  
 nav:
   - Home: index.md
   - My Involvement: involvement.md

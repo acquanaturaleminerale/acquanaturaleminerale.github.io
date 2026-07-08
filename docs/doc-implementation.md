@@ -346,9 +346,7 @@ The current implementation relies on PySAML2's default attribute parsing behavio
 
 ### `saml_session.py`
 
-The `saml_session.py` module manages temporary SAML authentication transaction state.
-
-Despite its name, this module does not manage user sessions. It manages the lifecycle of pending SAML authentication requests between Exerplaza and the Identity Provider.
+The `saml_session.py` module despite its name, does not manage user sessions. It manages temporary SAML authentication transactions, including persistence, RelayState storage, and atomic consumption for replay protection.
 
 Responsibilities:
 
@@ -357,10 +355,6 @@ Responsibilities:
 - Preserve RelayState values across the IdP authentication flow.  
 - Retrieve pending authentication transactions.  
 - Atomically validate and consume completed authentication requests.
-
-The module provides replay protection by ensuring that SAML authentication requests can only be successfully completed once.
-
-Authentication transactions are stored in the database to support consistent behaviour across multiple application workers.
 
 ---
 

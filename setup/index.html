@@ -1,0 +1,1086 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../involvement/">
+      
+      
+        <link rel="next" href="../doc-overview/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Setup - exerplaza saml documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#setup" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="exerplaza saml documentation" class="md-header__button md-logo" aria-label="exerplaza saml documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            exerplaza saml documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Setup
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="exerplaza saml documentation" class="md-nav__button md-logo" aria-label="exerplaza saml documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    exerplaza saml documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../involvement/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    My Involvement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setup
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Setup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prerequisites">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-a-branch-that-contains-the-saml-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use a branch that contains the SAML implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-configure-environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Configure environment variables
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Configure environment variables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#variable-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Variable reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-start-the-docker-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Start the Docker environment
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-generate-service-provider-certificates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Generate Service Provider certificates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-move-the-generated-certificate-pair-into-the-active-certificate-location" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Move the generated certificate pair into the active certificate location
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-generate-the-saml-secret" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Generate the SAML secret
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-configure-identity-provider-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Configure Identity Provider metadata
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Configure Identity Provider metadata">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#default-metadata-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Default metadata file
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-verify-the-service-provider-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Verify the Service Provider configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-restart-the-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Restart the application
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc-overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc-implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    implementation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../doc-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Prerequisites">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-a-branch-that-contains-the-saml-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use a branch that contains the SAML implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-configure-environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Configure environment variables
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Configure environment variables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#variable-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Variable reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-start-the-docker-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Start the Docker environment
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-generate-service-provider-certificates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Generate Service Provider certificates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-move-the-generated-certificate-pair-into-the-active-certificate-location" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Move the generated certificate pair into the active certificate location
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-generate-the-saml-secret" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Generate the SAML secret
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-configure-identity-provider-metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Configure Identity Provider metadata
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Configure Identity Provider metadata">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#default-metadata-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Default metadata file
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-verify-the-service-provider-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Verify the Service Provider configuration
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-restart-the-application" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Restart the application
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="setup">Setup</h1>
+<p>!!! warning "Development environment only"</p>
+<pre><code>This setup describes the current development and testing environment for the Saml implementation of Exerplaza.
+The SAML implementation has not been validated for production deployment yet.
+</code></pre>
+<p>!!! note:</p>
+<pre><code>Exerplaza’s current SAML implementation is based on PySAML2.
+If you need additional information about library behaviour or configuration, refer to the [PySAML2 documentation](https://pysaml2.readthedocs.io/).
+</code></pre>
+<p>This guide explains how to initialize and configure the SAML Service Provider (SP) implementation used by Exerplaza.</p>
+<p>A minimal understanding of the SAML authentication flow is recommended before following this guide. In particular, it is useful to be familiar with the roles of the Service Provider (SP), Identity Provider (IdP), metadata exchange, and Assertion Consumer Service (ACS) endpoint.</p>
+<p>The goal of this setup is to reproduce the development testing environment and verify the complete SAML authentication flow locally.</p>
+<p>The documented setup reproduces the development environment used for testing:
+- Exerplaza as the Service Provider;
+- PySAML2 as the SAML implementation library;
+- Keycloak as the local Identity Provider.</p>
+<p>Using another Identity Provider is supported, but it requires replacing the provided IdP metadata and adapting the Service Provider configuration accordingly.
+The Keycloak setup described later is only a development convenience used during testing and is not a requirement of the SAML implementation.</p>
+<p>Do not use these settings directly in production. Before deploying to production, review:
+- certificate management;
+- secret handling;
+- Identity Provider configuration;
+- logging configuration;
+- security settings.</p>
+<h2 id="prerequisites">Prerequisites</h2>
+<h3 id="use-a-branch-that-contains-the-saml-implementation">Use a branch that contains the SAML implementation</h3>
+<p>At the time of writing, the SAML implementation is available in the <code>simone-developement</code> branch.</p>
+<p>Use the branch containing the latest SAML implementation before following this guide.</p>
+<p>After switching to the correct branch, pull the latest changes before starting the setup process.</p>
+<hr />
+<h2 id="1-configure-environment-variables">1. Configure environment variables</h2>
+<p>Before starting the application, configure the SAML-related variables in the <code>.env</code> file.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code>SAML_BASE_URL=http://127.0.0.1:54321
+SAML_DEBUG=true
+SAML_LOG_LEVEL=DEBUG
+SAML_SECRET=0123456789
+</code></pre></div>
+<p>The initial <code>SAML_SECRET</code> value can be temporary. It will be replaced later with a cryptographically generated secret.</p>
+<h3 id="variable-reference">Variable reference</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Purpose</th>
+<th>Development value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SAML_BASE_URL</code></td>
+<td>Public base URL of the Service Provider. It must match the URL used to access Exerplaza and the URL configured in the Identity Provider.</td>
+<td><code>http://127.0.0.1:54321</code></td>
+</tr>
+<tr>
+<td><code>SAML_DEBUG</code></td>
+<td>Enables PySAML2 debug mode. Useful during development, but generally not recommended in production.</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>SAML_LOG_LEVEL</code></td>
+<td>Controls the verbosity of SAML-related logs. Valid values are <code>DEBUG</code>, <code>INFO</code>, <code>WARNING</code>, <code>ERROR</code>, and <code>CRITICAL</code>.</td>
+<td><code>DEBUG</code></td>
+</tr>
+<tr>
+<td><code>SAML_SECRET</code></td>
+<td>Secret used by PySAML2 to sign and protect internal SAML state. Replace the temporary value after generating the final secret.</td>
+<td>generated later</td>
+</tr>
+</tbody>
+</table>
+<p>Notes:</p>
+<ul>
+<li><code>SAML_BASE_URL</code> must match the URL shown in the browser when accessing the Exerplaza home page.</li>
+<li><code>SAML_DEBUG</code> can be set to either <code>true</code> or <code>false</code>.</li>
+<li>In production, <code>SAML_LOG_LEVEL=INFO</code> is recommended unless deeper debugging is required.</li>
+</ul>
+<hr />
+<h2 id="2-start-the-docker-environment">2. Start the Docker environment</h2>
+<p>Start the application containers:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>up
+</code></pre></div>
+<p>The Docker environment should already contain the system dependencies and Python libraries required by the SAML implementation. If a required dependency is missing, the application will fail during startup validation or SAML initialization.</p>
+<p>Starting the containers ensures that:</p>
+<ul>
+<li>the application environment is available;</li>
+<li>required services are running;</li>
+<li>SAML-related commands can be executed inside the <code>web</code> container.</li>
+</ul>
+<p>!!! note</p>
+<div class="highlight"><pre><span></span><code>At this stage the SAML system is not fully configured yet. The endpoints may exist, but SAML authentication will not work until the remaining setup steps are completed.
+</code></pre></div>
+<hr />
+<h2 id="3-generate-service-provider-certificates">3. Generate Service Provider certificates</h2>
+<p>Run the certificate generation script:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>web<span class="w"> </span>bash<span class="w"> </span>exerplaza/backend/saml_configuration/scripts/cert_generator.sh
+</code></pre></div>
+<p>The script generates a new certificate and private key inside the <code>next/</code> subdirectory:</p>
+<div class="highlight"><pre><span></span><code>exerplaza/backend/saml_configuration/certs/
+└── next/
+    ├── sp-cert.pem
+    └── sp-key.pem
+</code></pre></div>
+<p>The certificate is used by the Service Provider to sign SAML requests.</p>
+<p>The certificate does not authenticate users. It is used for SAML message signing and verification between the SP and IdP.</p>
+<p>If the configured Identity Provider requires signed requests, the SP certificate must also be registered inside the IdP configuration.</p>
+<p>The script also performs validation checks to ensure that:</p>
+<ul>
+<li>the certificate can be read correctly;</li>
+<li>the certificate is not already expired;</li>
+<li>the private key matches the certificate.</li>
+</ul>
+<p>At the end of the process, the script prints the location of the generated files and basic certificate details.</p>
+<hr />
+<h2 id="4-move-the-generated-certificate-pair-into-the-active-certificate-location">4. Move the generated certificate pair into the active certificate location</h2>
+<p>After generating the files, move or copy them from <code>certs/next/</code> into the active certificate directory expected by the application:</p>
+<div class="highlight"><pre><span></span><code>exerplaza/backend/saml_configuration/certs/sp-cert.pem
+exerplaza/backend/saml_configuration/certs/sp-key.pem
+</code></pre></div>
+<p>The current runtime configuration in <code>sp_settings.py</code> expects the certificate and private key at those exact paths.</p>
+<p>This step is required to ensure that the generated certificate pair is actually used by the Service Provider.</p>
+<hr />
+<h2 id="5-generate-the-saml-secret">5. Generate the SAML secret</h2>
+<p>Generate a cryptographically random secret:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>web<span class="w"> </span>openssl<span class="w"> </span>rand<span class="w"> </span>-hex<span class="w"> </span><span class="m">32</span>
+</code></pre></div>
+<p>Replace the value of <code>SAML_SECRET</code> in <code>.env</code> with the generated output.</p>
+<p>Example:</p>
+<div class="highlight"><pre><span></span><code>SAML_SECRET=&lt;generated-value&gt;
+</code></pre></div>
+<p>The secret should remain stable across deployments. Changing it invalidates existing SAML state and may break in-flight or persisted SAML-related data.</p>
+<hr />
+<h2 id="6-configure-identity-provider-metadata">6. Configure Identity Provider metadata</h2>
+<h3 id="default-metadata-file">Default metadata file</h3>
+<p>The repository already contains an <code>idp_metadata.xml</code> file used during development with the local Keycloak Identity Provider. That file is only valid for that specific Keycloak configuration. The provided metadata file should work with the Keycloak configuration described later. However, it is recommended to replace it with the metadata provided by the actual Identity Provider, even when using the same IdP software.</p>
+<p>The metadata file configures the trust relationship between Exerplaza and the IdP.</p>
+<p>However, metadata alone is not enough:
+- the IdP must release the required user attributes;
+- Exerplaza must know how to interpret those attributes;
+- the IdP configuration must match the SP configuration.</p>
+<p>If you are using a different Identity Provider, replace it with the correct metadata for your IdP.</p>
+<p>The SAML response must contain an email attribute so make sure the idp provides one. If you are using the keycloak idp mentioned further below an email attribute is already configured in it.</p>
+<p>Exerplaza uses this attribute to associate the authenticated SAML user with an existing local user. </p>
+<p>When using a different Identity Provider, ensure that:
+- an email attribute is released;
+- the attribute name matches the configured mapper;
+- the value matches the user's Exerplaza account email.</p>
+<p>If you do not have an idp yet you can follow the local keycloak idp setup guide further below or set up your own.</p>
+<p>The Identity Provider metadata file must be provided by the Identity Provider administrator or generated from the IdP's metadata endpoint.</p>
+<p>Place the Identity Provider metadata file inside:</p>
+<div class="highlight"><pre><span></span><code>exerplaza/backend/saml_configuration/metadata/
+</code></pre></div>
+<p>The file must be named:</p>
+<div class="highlight"><pre><span></span><code>idp_metadata.xml
+</code></pre></div>
+<p>The IdP metadata file is the only IdP-specific file required by the default setup.</p>
+<p>When replacing the Identity Provider:
+1. replace <code>idp_metadata.xml</code>;
+2. ensure the IdP provides the attributes required by Exerplaza;
+3. ensure <code>saml_sp_config.py</code> matches the IdP configuration.</p>
+<hr />
+<h2 id="7-verify-the-service-provider-configuration">7. Verify the Service Provider configuration</h2>
+<p>The Service Provider configuration is defined in:</p>
+<div class="highlight"><pre><span></span><code>exerplaza/backend/saml_configuration/saml_sp_config.py
+</code></pre></div>
+<p>Review it and ensure that it matches the Identity Provider you intend to use.</p>
+<p>The default configuration was tested against the local Keycloak Identity Provider used during development, so if you are using a different IdP you may need to adjust the configuration accordingly.</p>
+<p>Important values to verify include:</p>
+<ul>
+<li>the ACS endpoint;</li>
+<li>the SP entity ID;</li>
+<li>signing requirements;</li>
+<li>certificate and key configuration;</li>
+<li>metadata location;</li>
+<li>any IdP-specific expectations required by your environment.</li>
+</ul>
+<p>If you need to modify the SP configuration, refer to the <a href="https://pysaml2.readthedocs.io/en/latest/howto/config.html">PySAML2 configuration documentation</a>.</p>
+<hr />
+<h2 id="8-restart-the-application">8. Restart the application</h2>
+<p>After updating the environment variables, certificates, metadata, or SAML configuration, restart the application so the new values are picked up correctly.</p>
+<p>You can stop the running containers with:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>down
+</code></pre></div>
+<p>and then start them again when needed.</p>
+<p>This is necessary because the SAML configuration is loaded from environment variables and files, and the Service Provider configuration is cached by the Flask application once initialized.</p>
+<hr />
+<h1 id="verify-successful-setup">Verify successful setup</h1>
+<p>The setup is complete when:</p>
+<ul>
+<li>Exerplaza starts without SAML configuration errors;</li>
+<li>the SAML login option is visible;</li>
+<li>the user is redirected to the Identity Provider;</li>
+<li>authentication succeeds;</li>
+<li>the user is redirected back to Exerplaza;</li>
+<li>the authenticated user matches an existing Exerplaza account.</li>
+</ul>
+<hr />
+<h1 id="optional-local-keycloak-setup-for-development-testing">Optional: Local Keycloak setup for development testing</h1>
+<p>This section is not required for production deployment.</p>
+<p>It describes the Identity Provider environment used during development and automated testing.
+You can use your own idp setup for testing.</p>
+<h2 id="1-import-the-keycloak-docker-configuration">1. Import the Keycloak Docker configuration</h2>
+<p>From the <code>simone-developement-keycloak</code> branch, import the <code>docker-compose.yml</code> file that includes the Keycloak service.</p>
+<h2 id="2-rebuild-and-start-the-project">2. Rebuild and start the project</h2>
+<p>Run:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>--build
+</code></pre></div>
+<p>This rebuilds the project, adds the Keycloak service and its persistence volume, and installs the components required to run Keycloak locally.</p>
+<p>Wait until Keycloak finishes booting before continuing.</p>
+<h2 id="3-log-in-to-keycloak">3. Log in to Keycloak</h2>
+<p>Open:</p>
+<p><code>http://localhost:8080/</code></p>
+<p>Use the default credentials:</p>
+<div class="highlight"><pre><span></span><code>username: admin
+password: admin
+</code></pre></div>
+<p>You can change these credentials afterwards if needed.</p>
+<h2 id="4-import-the-keycloak-realm-configuration">4. Import the Keycloak realm configuration</h2>
+<p>The default Keycloak configuration used during development is available in the <code>simone-developement-keycloak</code> branch as:</p>
+<div class="highlight"><pre><span></span><code>realm-export.json
+</code></pre></div>
+<p>The export contains:
+- the SAML client representing Exerplaza;
+- client scopes;
+- attribute mappers;
+- signing configuration;
+- realm settings.</p>
+<p>Importing it recreates the development Keycloak environment used for testing.</p>
+<p>Import the realm export into Keycloak after logging in.</p>
+<p>The export recreates the development realm configuration, including the SAML client, scopes, and mappings required for testing.</p>
+<p>You can also configure your own Keycloak realm manually, but in that case make sure that:</p>
+<ul>
+<li>the realm is configured correctly for Exerplaza as a SAML Service Provider;</li>
+<li>the necessary client scopes and attribute mappings are present;</li>
+<li>the Service Provider configuration in Exerplaza matches the Keycloak configuration.</li>
+</ul>
+<p>The SAML response must contain the user's email address.</p>
+<p>The provided Keycloak configuration includes the required attribute mapping. If using another IdP, ensure that an email attribute is released and that it matches the attribute expected by Exerplaza. </p>
+<p>Refer to the keycloak documentation if configuring your own local keycloak idp <a href="https://www.keycloak.org/documentation">keycloak documentation</a></p>
+<h2 id="5-retrieve-the-keycloak-saml-metadata">5. Retrieve the Keycloak SAML metadata</h2>
+<p>Once Keycloak is configured, open its SAML metadata endpoint and copy the generated metadata.</p>
+<p>The realm export is intended only for development. Do not expose it publicly, as it may contain Identity Provider configuration, client information, and secrets depending on the exported settings.</p>
+<p>Keycloak exposes the SAML Identity Provider metadata through its descriptor endpoint:</p>
+<div class="highlight"><pre><span></span><code>http://&lt;keycloak-host&gt;:&lt;port&gt;/realms/&lt;realm-name&gt;/protocol/saml/descriptor
+</code></pre></div>
+<p>if you are using the same keycloak setup used for testing it is found at:</p>
+<div class="highlight"><pre><span></span><code>http://localhost:8080/realms/saml-test/protocol/saml/descriptor
+</code></pre></div>
+<p>Then replace the metadata file used by Exerplaza:</p>
+<div class="highlight"><pre><span></span><code>exerplaza/backend/saml_configuration/metadata/idp_metadata.xml
+</code></pre></div>
+<p>Make sure the metadata includes the signing certificate expected by the Service Provider.</p>
+<p>The metadata contains the Keycloak IdP signing certificate used to verify SAML responses.</p>
+<p>If you replace the IdP or change its signing keys, regenerate the metadata and replace this file.</p>
+<h2 id="6-begin-local-idp-testing">6. Begin local IdP testing</h2>
+<p>At this point you can test the SAML flow locally against Keycloak.</p>
+<p>A helper script for creating a local Exerplaza test user is available at:</p>
+<div class="highlight"><pre><span></span><code>exerplaza/backend/saml_configuration/scripts/test_user.py
+</code></pre></div>
+<p>Run it inside the container:</p>
+<div class="highlight"><pre><span></span><code>docker<span class="w"> </span>compose<span class="w"> </span><span class="nb">exec</span><span class="w"> </span>-it<span class="w"> </span>web<span class="w"> </span>exerplaza/backend/saml_configuration/scripts/test_user.py
+</code></pre></div>
+<p>Make sure a Keycloak user with the same email address also exists, otherwise the SAML login will succeed at the IdP level but fail during Exerplaza’s local user lookup.</p>
+<p>After completing the setup, access:</p>
+<p>http://127.0.0.1:54321</p>
+<p>and use the SAML login option.</p>
+<p>The normal Exerplaza authentication system remains available. SAML is an additional authentication method.</p>
+<hr />
+<h1 id="changing-saml-settings">Changing SAML settings</h1>
+<p>To modify the Exerplaza Service Provider settings, edit:</p>
+<div class="highlight"><pre><span></span><code>exerplaza/backend/saml_configuration/saml_sp_config.py
+</code></pre></div>
+<p>If you need to change runtime validation behaviour or file paths, also review:</p>
+<div class="highlight"><pre><span></span><code>exerplaza/backend/saml_configuration/sp_settings.py
+</code></pre></div>
+<p>After changing the SAML configuration, restart the project so the new configuration is loaded correctly. Do not rely on hot changes while the application is already running.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": [], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+        <script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -5,10 +5,12 @@ theme:
   palette:
     primary: indigo
     accent: blue
-    
+
+markdown_extensions:
+  - pymdownx.superfences
+
 nav:
   - Home: index.md
   - My Involvement: involvement.md
   - Setup: setup.md
   - Documentation: documentation.md
-  

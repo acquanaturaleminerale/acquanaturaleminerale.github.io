@@ -236,6 +236,8 @@ Responsibilities:
 
 The SAML integration extends the existing authentication system rather than replacing it.
 
+The email address is used only as a lookup key against the existing Exerplaza user database and is not used to create or update user records.
+
 The SAML integration does not provision or create local users. After a SAML response is validated, the application extracts the email attribute from the SAML identity data, looks up an existing Exerplaza user by email, and only completes login if that user already exists and is allowed to authenticate.
 
 ---
@@ -257,11 +259,11 @@ Responsibilities:
 
 The SAML configuration layer provides static runtime configuration for the Service Provider integration.
 
-The SAML integration uses static configuration for the lifetime of a running application process. Environment settings and configuration paths are resolved during application startup. Basic startup validation is also performed at that stage. SAML-specific validation and PySAML2 Service Provider initialization occur when the SAML Service Provider is initialized. Once initialized, the Service Provider configuration is cached and remains static until the application restarts.
+Environment settings and configuration paths are resolved during application startup. Basic startup validation is also performed at that stage. SAML-specific validation and PySAML2 Service Provider initialization occur when the SAML Service Provider is initialized. Once initialized, the Service Provider configuration is cached and remains static until the application restarts.
 
 Changes to SAML configuration require rebuilding or restarting the application environment.
 
-The configuration layer also contains utilities used for local certificate generation and SAML environment setup during development and deployment preparation.
+The SAML configuration values are loaded when the Flask application starts and remain static during runtime. Validation is split between startup checks and SAML initialization checks. The PySAML2 Service Provider is initialized from this static configuration before SAML operations are performed.
 
 ---
 
@@ -1187,9 +1189,11 @@ The test environment validates the integration between Exerplaza, PySAML2, and a
 
 # Certificate rotation
 
-Certificate rotation is currently a manual operational process. The exact rotation procedure depends on how the Service Provider certificate is configured in the deployment environment and how the Identity Provider consumes updated SP metadata. The current implementation does not provide automated certificate rollover or renewal logic, and rollover procedures should be validated against the target Identity Provider before production use.
+Certificate rotation is currently a manual operational process. The exact rotation procedure depends on how Service Provider certificate material is deployed and how the Identity Provider consumes updated Service Provider metadata or certificates.
 
-Automatic certificate renewal and certificate rollover are not currently implemented.
+The current implementation does not provide automated certificate rollover, automated renewal, or built-in certificate rotation orchestration. Rotation procedures should be validated against the target Identity Provider and deployment environment before production use.
+
+Any certificate change requires updating the deployed Service Provider certificate material and restarting the application so the new configuration is loaded.
 
 ---
 

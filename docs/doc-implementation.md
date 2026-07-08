@@ -1,3 +1,5 @@
+# Documentation
+
 ## Components
 
 The SAML integration is composed of several components that work together to provide Service Provider functionality while integrating with the existing Exerplaza authentication system.

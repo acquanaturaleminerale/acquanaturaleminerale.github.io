@@ -19,7 +19,7 @@ The current implementation provides:
 
 The implementation currently supports a single configured Identity Provider and represents a complete SAML authentication flow integration within the current project scope.
 
-The SAML configuration is treated as static for the lifetime of the running application process. Basic configuration checks are performed during application startup, and the PySAML2 Service Provider configuration is initialized and validated before SAML functionality is used.
+The SAML integration uses static configuration for the lifetime of a running application process. Environment settings and configuration paths are resolved during application startup. Basic startup validation is also performed at that stage. SAML-specific validation and PySAML2 Service Provider initialization occur when the SAML Service Provider is initialized. Once initialized, the Service Provider configuration is cached and remains static until the application restarts.
 
 ## Current limitations
 
@@ -257,7 +257,7 @@ Responsibilities:
 
 The SAML configuration layer provides static runtime configuration for the Service Provider integration.
 
-Basic configuration checks are performed during application startup, while SAML-specific validation and Service Provider initialization occur before SAML functionality is used. Once initialized, the Service Provider configuration remains static for the lifetime of the running application process. This ensures that all application workers operate using a consistent Service Provider configuration.
+The SAML integration uses static configuration for the lifetime of a running application process. Environment settings and configuration paths are resolved during application startup. Basic startup validation is also performed at that stage. SAML-specific validation and PySAML2 Service Provider initialization occur when the SAML Service Provider is initialized. Once initialized, the Service Provider configuration is cached and remains static until the application restarts.
 
 Changes to SAML configuration require rebuilding or restarting the application environment.
 
@@ -897,6 +897,8 @@ Current behaviour:
 
 If a production Identity Provider uses different attribute naming conventions, the SAML attribute mapping configuration may need to be adjusted so that Exerplaza can reliably obtain the user email address.
 
+In the current implementation, a successful SAML login requires a usable email attribute in the validated SAML response because email is the only supported local user lookup key.
+
 ---
 
 ### Optional variables
@@ -1185,16 +1187,7 @@ The test environment validates the integration between Exerplaza, PySAML2, and a
 
 # Certificate rotation
 
-Certificate rotation is currently performed manually.
-
-The expected workflow is:
-
-1. Generate a new certificate pair.
-2. Add the new certificate material alongside the existing certificate configuration.
-3. Update the Identity Provider trust configuration.
-4. Deploy the updated configuration.
-5. Verify authentication.
-6. Remove obsolete certificate material after the transition period.
+Certificate rotation is currently a manual operational process. The exact rotation procedure depends on how the Service Provider certificate is configured in the deployment environment and how the Identity Provider consumes updated SP metadata. The current implementation does not provide automated certificate rollover or renewal logic, and rollover procedures should be validated against the target Identity Provider before production use.
 
 Automatic certificate renewal and certificate rollover are not currently implemented.
 
@@ -1237,3 +1230,23 @@ When modifying the SAML implementation, particular attention should be given to:
 - authentication state handling.
 
 Changes to these components should always be validated through automated tests and end-to-end authentication testing.
+
+# Logging and operational diagnostics
+
+The SAML integration emits application-side diagnostic logs for key Service Provider events and failures.
+
+Examples include:
+
+- SAML login initiation  
+- ACS processing failures  
+- missing or invalid authentication transactions  
+- user resolution failures    
+- disabled-user login attempts  
+- successful SAML logins  
+- metadata generation failures  
+
+These logs are intended for developer and operational diagnostics rather than user-facing error handling. Log verbosity is influenced by the application logging configuration and, for PySAML2-specific logging, by the SAML debug and log-level settings.
+
+Care should be taken not to expose sensitive SAML data in production logs. Debug logging should be enabled only when required for troubleshooting.
+
+That’s enough. You don’t need a whole observability chapter.

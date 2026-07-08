@@ -15,15 +15,15 @@ The current implementation provides:
 - Integration with the existing user session management  
 - Database-backed SAML authentication request lifecycle tracking  
 - Replay protection mechanisms through single-use request consumption and expiration validation  
-- Local certificate generation and SAML environment setup utilities for testing and deployment configuration  
+- Local certificate generation and SAML environment setup utilities for testing and deployment preparation
 
-The implementation currently supports a single configured Identity Provider and represents a complete SAML authentication flow integration within the current project scope.
+The implementation currently supports a single configured Identity Provider and represents a complete authentication flow implementation within the supported project scope.
 
 The SAML integration uses static configuration for the lifetime of a running application process. Environment settings and configuration paths are resolved during application startup. Basic startup validation is also performed at that stage. SAML-specific validation and PySAML2 Service Provider initialization occur when the SAML Service Provider is initialized. Once initialized, the Service Provider configuration is cached and remains static until the application restarts.
 
 ## Current limitations
 
-The current implementation demonstrates the complete SAML authentication flow and provides a functional basis for further production validation. Before production use, additional validation and hardening would be required, including:
+The current implementation demonstrates the complete authentication flow implementation within the supported project scopes as a functional basis for further production validation. Before production use, additional validation and hardening would be required, including:
 
 - Additional security hardening and review  
 - Extended handling of edge cases and failure scenarios  

@@ -8,10 +8,10 @@ theme:
 
 markdown_extensions:
   - pymdownx.superfences
-  
+
 extra_javascript:
   - https://unpkg.com/mermaid/dist/mermaid.min.js
-  
+
 nav:
   - Home: index.md
   - My Involvement: involvement.md

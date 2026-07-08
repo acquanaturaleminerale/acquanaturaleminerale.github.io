@@ -358,66 +358,384 @@ If any previous stage fails, the authentication process is terminated and the us
 
 # Project Structure
 
-The implementation is divided into separate modules according to responsibility.
+The SAML implementation is separated into application integration, protocol handling, configuration management, and authentication transaction state tracking responsibilities.
 
-Example structure:
+The main SAML-related components are organized as follows:
 
+```text
+exerplaza/
+│
+├── app/
+│   │
+│   └── mod_saml/
+│       │
+│       ├── saml_routes.py
+│       ├── saml_service.py
+│       ├── saml_session.py
+│       │
+│       └── templates/
+│           └── saml_error.jinja
+│
+└── backend/
+    │
+    ├── saml_configuration/
+    │   │
+    │   ├── saml_sp_config.py
+    │   ├── sp_settings.py
+    │   ├── certificates/
+    │   ├── metadata/
+    │   └── scripts/
+    │
+    └── models/
+        │
+        └── SamlAuthnRequest.py
 ```
-saml/
-|
-├── routes/
-│   └── Authentication endpoints
-│
-├── services/
-│   └── SAML protocol logic
-│
-├── configuration/
-│   └── SAML configuration management
-│
-├── templates/
-│   └── Authentication error pages
-│
-└── database/
-    └── Request tracking models
-```
-
-## Routes
-
-Responsible for:
-
-- starting authentication;
-- receiving SAML responses;
-- handling authentication errors.
 
 ---
 
-## Services
+## `app/mod_saml`
 
-Responsible for:
+The `mod_saml` module contains the Flask application integration layer for SAML authentication.
 
-- interacting with PySAML2;
-- creating and validating SAML messages;
-- implementing authentication logic.
+It provides the application-facing implementation of the Service Provider flow by coordinating:
+
+- SAML HTTP endpoints;
+- PySAML2-based protocol operations;
+- temporary authentication transaction tracking;
+- integration with the existing Exerplaza user/session system.
+
+The module does not implement the SAML protocol itself. SAML message generation, parsing, and validation are delegated to PySAML2 through the service layer.
+
+The module contains:
+
+- SAML route handling;  
+- SAML protocol integration;  
+- AuthnRequest transaction management;  
+- SAML authentication error presentation.  
 
 ---
 
-## Configuration
+### `saml_routes.py`
 
-Responsible for:
+The `saml_routes.py` module defines the Flask endpoints used during the SAML authentication lifecycle.
 
-- loading SAML settings;
-- reading environment variables;
-- generating PySAML2 configuration objects.
+It acts as the entry point between browser requests and the internal SAML service components.
+
+Responsibilities:
+
+- Expose the Service Provider metadata endpoint.  
+- Initiate SAML authentication requests.  
+- Validate post-login redirect destinations.  
+- Receive SAML responses through the Assertion Consumer Service endpoint.  
+- Coordinate authentication transaction validation.  
+- Coordinate authenticated user resolution through the existing Exerplaza user system.
+- Coordinate application session creation through the existing session mechanism. 
+- Redirect users to the appropriate application location after authentication.  
+- Handle SAML authentication failures.  
+
+Implemented endpoints:
+
+- `/saml/metadata`  
+  - Returns generated Service Provider metadata.  
+
+- `/saml/login`  
+  - Starts the SAML authentication flow.  
+  - Generates an AuthnRequest through the SAML service layer.  
+  - Stores the request transaction for later validation.  
+  - Redirects the browser to the Identity Provider.  
+
+- `/saml/acs`
+  - Assertion Consumer Service endpoint.  
+  - Receives the SAMLResponse returned by the Identity Provider.  
+  - Coordinates response validation, transaction consumption, user resolution, and session creation.  
+
+- `/saml/error`  
+  - Displays user-facing SAML authentication failure messages.  
 
 ---
 
-## Database
+### `saml_service.py`
 
-Responsible for:
+The `saml_service.py` module provides the integration layer between Exerplaza and the PySAML2 library.
 
-- storing authentication request information;
-- validating request lifecycle;
-- preventing request reuse.
+It contains the SAML protocol operations required by the Service Provider implementation.
+
+Responsibilities:
+
+- Initialize the PySAML2 Service Provider configuration.  
+- Validate SAML runtime configuration before initialization.  
+- Cache the initialized Service Provider configuration during application runtime.  
+- Create SAML authentication requests.  
+- Generate Service Provider metadata.  
+- Parse incoming SAML responses.  
+- Validate SAML responses through PySAML2.  
+- Extract authenticated identity information.  
+- Extract SAML request correlation identifiers from responses.  
+
+The module separates SAML protocol handling from Flask request handling. Application-specific decisions, such as user lookup and session creation, remain outside this layer.
+
+---
+
+### `saml_session.py`
+
+The `saml_session.py` module manages temporary SAML authentication transaction state.
+
+Despite its name, this module does not manage user sessions. It manages the lifecycle of pending SAML authentication requests between Exerplaza and the Identity Provider.
+
+Responsibilities:
+
+- Create SAML authentication transaction records.  
+- Store generated AuthnRequest identifiers.  
+- Preserve RelayState values across the IdP authentication flow.  
+- Retrieve pending authentication transactions.  
+- Atomically validate and consume completed authentication requests.
+
+The module provides replay protection by ensuring that SAML authentication requests can only be successfully completed once.
+
+Authentication transactions are stored in the database to support consistent behaviour across multiple application workers.
+
+---
+
+### `templates/saml_error.jinja`
+
+The `saml_error.jinja` template provides the user-facing error page displayed when SAML authentication cannot be completed.
+
+The template is rendered by the SAML error endpoint and uses the existing Exerplaza template inheritance system.
+
+Responsibilities:
+
+- Display authentication failure messages.  
+- Provide user feedback for failed SAML authentication attempts.  
+- Provide navigation back to the normal login flow.
+
+---
+
+## `backend/saml_configuration`
+
+The saml_configuration package provides the static runtime configuration required by the Exerplaza SAML Service Provider.
+
+It contains the configuration bridge between Exerplaza, PySAML2, and the deployed SAML environment.
+
+Responsibilities:
+
+- Define the PySAML2 Service Provider configuration.  
+- Resolve environment-based runtime settings.  
+- Validate required SAML dependencies and cryptographic material.  
+- Provide Identity Provider metadata configuration.  
+- Provide Service Provider signing credentials.  
+- Provide development and deployment preparation utilities.  
+
+The configuration is loaded during application startup and remains static for the lifetime of the running application process.
+
+Changes to SAML configuration, certificates, metadata, or environment values require an application restart.
+
+The configuration package supports a single configured Identity Provider. Multi-IdP federation scenarios are outside the current implementation scope.
+
+### `saml_sp_config.py`
+
+The saml_sp_config.py module defines the PySAML2 Service Provider configuration consumed by the SAML service layer.
+
+It translates Exerplaza runtime settings into the configuration format required by PySAML2.
+
+Responsibilities:
+
+- Define the Service Provider identity and metadata information.  
+- Configure SAML endpoints exposed by Exerplaza.  
+- Configure signing and certificate usage.  
+- Configure Identity Provider metadata sources.  
+- Define SAML protocol preferences required by the current integration.  
+- Provide PySAML2 logging configuration.  
+
+The module contains static configuration values rather than runtime application logic.
+
+The Service Provider configuration is initialized once and cached by the SAML service layer. Runtime modification of this configuration is not supported.
+
+Security-related authentication transaction handling, including request correlation, expiration validation, and replay protection, is implemented by the Exerplaza application layer rather than delegated entirely to PySAML2.
+
+---
+
+### `sp_settings.py`
+
+The sp_settings.py module provides runtime configuration values and validation helpers used by the SAML integration.
+
+It resolves configuration values from environment variables and filesystem locations before the PySAML2 Service Provider configuration is initialized.
+
+Responsibilities:
+
+- Resolve SAML environment variables.  
+- Define paths to certificates, keys, and IdP metadata.  
+- Locate required external dependencies such as xmlsec1.  
+- Validate startup requirements.  
+- Validate runtime SAML files and cryptographic material.  
+- Verify that the configured Service Provider certificate matches its private key.  
+
+Validation is split into two phases:
+
+### Startup validation
+
+Checks configuration requirements that can be validated when the application starts.
+
+Examples:
+
+- Required environment variables.  
+- Available system dependencies.  
+- Logging configuration validity.  
+
+### Runtime SAML validation
+
+Checks configuration required when SAML functionality is initialized.
+
+Examples:
+
+- Presence of IdP metadata.  
+- Presence of Service Provider certificate material.  
+- Presence of SAML secrets.  
+- Certificate and private key validity.  
+
+This separation allows failures related to SAML deployment material to be detected before authentication is attempted.
+
+### `certificates/`
+
+The certificates directory contains the Service Provider cryptographic material used for SAML communication.
+
+The current implementation uses certificates for signing purposes. SAML assertion encryption is not currently enabled.
+
+Stored material:
+
+- Service Provider public certificate.  
+- Service Provider private key.  
+
+Certificate generation is performed manually using the provided generation utility.
+
+The certificate generation workflow is:
+
+- Run the certificate generation script.  
+- A new certificate pair is created inside the temporary next directory.  
+- Generated files are validated.  
+- The generated certificate and key are manually moved into the active certificate directory.  
+
+Certificate rotation is currently a manual operational process.
+
+The implementation does not currently provide automatic certificate renewal or rotation.
+
+### `metadata/`
+
+The metadata directory contains Identity Provider metadata consumed by PySAML2.
+
+The metadata is trusted locally and is not retrieved dynamically during runtime.
+
+Current contents:
+
+idp_metadata.xml
+
+The metadata file provides the Identity Provider information required by the Service Provider, including:
+
+- Identity Provider identity information.  
+- Available SAML endpoints.  
+- Trusted signing certificates.  
+
+The current implementation uses locally stored metadata rather than dynamically fetching metadata during runtime.
+
+Changes to Identity Provider metadata require replacing the metadata file and restarting the application.
+
+---
+
+### `scripts/`
+
+The scripts directory contains manual SAML environment preparation utilities.
+
+Current responsibilities:
+
+- Generate Service Provider certificate material.  
+- Validate generated certificate files.   
+
+These scripts are operational helpers and are not part of the runtime authentication flow.
+
+---
+
+## `backend/models/SamlAuthnRequest.py`
+
+The `SamlAuthnRequest` model represents persistent storage for temporary SAML authentication transaction state.
+
+Unlike application sessions or user records, this model stores only the information required to safely complete a SAML authentication flow.
+
+Each record represents a single SAML AuthnRequest initiated by Exerplaza and awaiting a corresponding response from the Identity Provider.
+
+Responsibilities:
+
+- Store generated SAML AuthnRequest identifiers used for response correlation.
+- Preserve RelayState information across the Identity Provider authentication flow.
+- Track authentication request expiration.
+- Track whether an authentication request has already been consumed.
+- Provide atomic request consumption to prevent replayed SAML responses.
+
+The model is used by the SAML session layer to validate that incoming SAML responses:
+
+- Reference an authentication request previously created by Exerplaza.
+- Have not exceeded the allowed lifetime.
+- Have not already been successfully processed.
+
+The model is intentionally separate from:
+
+- User account data.
+- Application sessions.
+- Application authorization state.
+
+It represents a temporary security transaction record rather than persistent user authentication state.
+
+---
+
+### Authentication transaction lifecycle
+
+A SAML authentication transaction follows these states:
+
+#### Created
+
+When Exerplaza generates a SAML AuthnRequest, a record is created containing:
+
+- The generated SAML request identifier.
+- The RelayState value.
+- The expiration timestamp.
+
+#### Pending
+
+The request remains pending while the user authenticates with the Identity Provider.
+
+#### Consumed
+
+After a valid SAML response is received:
+
+- The request is validated.
+- The record is atomically marked as consumed.
+- The stored RelayState is recovered.
+
+A consumed request cannot be successfully processed again.
+
+#### Expired
+
+Requests exceeding their configured lifetime are rejected.
+
+Expired unused requests may be removed through the maintenance cleanup operation.
+
+---
+
+### Replay protection
+
+The model provides replay protection by enforcing single-use SAML authentication transactions.
+
+Request consumption is performed atomically at the database level, ensuring that concurrent authentication attempts cannot successfully consume the same request more than once.
+
+This prevents previously accepted SAML responses from being replayed to create additional authenticated application sessions.
+
+---
+
+### Cleanup
+
+Expired unused authentication transactions can be removed through the provided cleanup operation.
+
+Cleanup is not part of the authentication flow and does not affect active authentication transactions.
+
+The current implementation expects cleanup to be triggered externally through a scheduled maintenance process or administrative operation.
 
 ---
 

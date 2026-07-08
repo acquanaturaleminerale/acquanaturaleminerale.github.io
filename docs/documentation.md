@@ -34,6 +34,8 @@ The current implementation is designed around a single configured Identity Provi
 
 # Architecture
 
+## SAML Authentication Flow
+
 ```mermaid
 sequenceDiagram
     actor User
@@ -55,7 +57,7 @@ sequenceDiagram
     User->>Browser: Click "Log in with SSO"
     Browser->>SamlModule: GET /saml/login?next=...
 
-    SamlModule->>SamlModule: Sanitize RelayState and generate AuthnRequest
+    SamlModule->>SamlModule: Sanitize RelayState and generate SAML AuthnRequest through PySAML2
     SamlModule->>RequestStore: Store request_id and RelayState
     RequestStore-->>SamlModule: Request tracked
 

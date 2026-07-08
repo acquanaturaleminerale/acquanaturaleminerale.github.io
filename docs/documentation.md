@@ -34,28 +34,59 @@ The current implementation is designed around a single configured Identity Provi
 
 # Architecture
 
-The SAML integration is composed of several components working together:
+```mermaid
+sequenceDiagram
+    actor User
+    participant Browser
+    participant LoginPage as "Exerplaza Login Page"
+    participant SamlModule as "Exerplaza SAML SP Integration"
+    participant RequestStore as "SAML AuthnRequest Tracking Store"
+    participant SessionSystem as "Exerplaza User / Session System"
+    participant IdP as "Identity Provider (IdP)"
 
-```
-User
- |
- |
-Exerplaza Flask Application
- |
- +-----------------------------+
- |                             |
-Existing Authentication     SAML Authentication
-                                |
-                                |
-                         PySAML2 Integration
-                                |
-                                |
-                    SAML Request Tracking Database
-                                |
-                                |
-                         External Identity Provider
+    Note over User,IdP: Access login page
+
+    User->>Browser: Open login page
+    Browser->>LoginPage: Request login page
+    LoginPage-->>Browser: Render login form with SSO option
+
+    Note over User,IdP: Initiate SAML authentication
+
+    User->>Browser: Click "Log in with SSO"
+    Browser->>SamlModule: GET /saml/login?next=...
+
+    SamlModule->>SamlModule: Sanitize RelayState and generate AuthnRequest
+    SamlModule->>RequestStore: Store request_id and RelayState
+    RequestStore-->>SamlModule: Request tracked
+
+    SamlModule-->>Browser: Redirect to Identity Provider
+    Browser->>IdP: Send SAML AuthnRequest
+
+    Note over User,IdP: Authenticate with Identity Provider
+
+    User->>IdP: Authenticate
+    IdP-->>Browser: Return SAMLResponse form (HTTP POST)
+    Browser->>SamlModule: POST /saml/acs
+
+    Note over User,IdP: Process SAML response
+
+    SamlModule->>SamlModule: Validate SAMLResponse
+    SamlModule->>RequestStore: Consume request_id and recover RelayState
+    RequestStore-->>SamlModule: RelayState
+
+    SamlModule->>SessionSystem: Resolve local user
+    SessionSystem-->>SamlModule: User found
+
+    SamlModule->>SessionSystem: Create authenticated session
+    SessionSystem-->>SamlModule: Session established
+
+    SamlModule-->>Browser: Redirect to RelayState
+    Browser-->>User: Return authenticated user
+
+    Note right of SamlModule: If SAML validation fails, the request is expired,<br/>already consumed, the user does not exist, or the<br/>user is disabled, the flow is redirected to the<br/>SAML error page instead of creating a session.
 ```
 
+---
 ## Components
 
 ### Flask Application

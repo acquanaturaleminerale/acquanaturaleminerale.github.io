@@ -19,7 +19,7 @@ The current implementation provides:
 
 The implementation currently supports a single configured Identity Provider and represents a complete SAML authentication flow integration within the current project scope.
 
-The SAML configuration is loaded during application startup and is considered static during runtime. This ensures that all application workers operate using a consistent Service Provider configuration. Any changes to the SAML configuration require rebuilding or restarting the application environment.
+The SAML configuration is treated as static for the lifetime of the running application process. Basic configuration checks are performed during application startup, and the PySAML2 Service Provider configuration is initialized and validated before SAML functionality is used.
 
 ## Current limitations
 
@@ -31,6 +31,10 @@ The current implementation demonstrates the complete SAML authentication flow an
 - Additional deployment-specific testing and operational validation  
 
 The current implementation is designed around a single configured Identity Provider. Support for multiple Identity Providers or federation scenarios is not included in the current scope.
+
+The current implementation does not provision or update users from SAML assertions. After a successful SAML authentication, Exerplaza resolves the user exclusively by email address against the existing internal user database. Authentication succeeds only if a matching local user already exists and is allowed to log in.
+
+Time-based SAML assertion validation, including clock-related validity checks handled by the underlying SAML library, is not customized by the Exerplaza application layer in the current implementation.
 
 Expired and unused authentication requests can be removed through the provided cleanup operation. The database does not automatically remove expired records; cleanup must be triggered by an external maintenance process or scheduled task.
 
@@ -227,9 +231,12 @@ Responsibilities:
 
 - Resolve users from SAML-provided identity attributes  
 - Verify that users are allowed to authenticate  
-- Create the authenticated application session  
+- Create the authenticated application session
+- Exerplaza currently resolves SAML-authenticated users by email address.  
 
 The SAML integration extends the existing authentication system rather than replacing it.
+
+The SAML integration does not provision or create local users. After a SAML response is validated, the application extracts the email attribute from the SAML identity data, looks up an existing Exerplaza user by email, and only completes login if that user already exists and is allowed to authenticate.
 
 ---
 
@@ -248,7 +255,9 @@ Responsibilities:
 - Generate and provide Service Provider metadata configuration  
 - Validate SAML runtime settings during application startup  
 
-The configuration layer is initialized when the Flask application starts and remains static during runtime. This ensures that all application workers operate using a consistent Service Provider configuration.
+The SAML configuration layer provides static runtime configuration for the Service Provider integration.
+
+Basic configuration checks are performed during application startup, while SAML-specific validation and Service Provider initialization occur before SAML functionality is used. Once initialized, the Service Provider configuration remains static for the lifetime of the running application process. This ensures that all application workers operate using a consistent Service Provider configuration.
 
 Changes to SAML configuration require rebuilding or restarting the application environment.
 
@@ -299,7 +308,8 @@ During this step:
 
 - The SAML response is retrieved from the incoming request.  
 - The response is parsed and validated through PySAML2.  
-- The authenticated identity attributes are extracted.  
+- The authenticated identity attributes are extracted from the validated SAML response.
+- The email attribute used for local user resolution is read from the extracted identity data.
 - The original AuthnRequest identifier (`InResponseTo`) is recovered from the SAML response.  
 - The corresponding authentication transaction is checked against the AuthnRequest tracking store.  
 
@@ -337,12 +347,18 @@ The existing user/session system remains responsible for application authenticat
 
 During this step:
 
-- The user is resolved from SAML-provided identity attributes.
+- The user is resolved from the SAML identity by email address.
 - User restrictions are checked.
 - The authenticated user is passed into the existing session mechanism.
 - The application session is created using the existing Exerplaza authentication lifecycle.
 
 The SAML integration does not create a separate authentication system. It acts as an external identity authentication layer that integrates with the existing user and session management.
+
+Application-level authentication fails if:
+
+- the validated SAML identity does not contain a usable email address;  
+- no Exerplaza user exists for that email address;  
+- the matched user account is disabled.  
 
 ---
 
@@ -474,6 +490,8 @@ Responsibilities:
 
 The module separates SAML protocol handling from Flask request handling. Application-specific decisions, such as user lookup and session creation, remain outside this layer.
 
+The current implementation relies on PySAML2's default attribute parsing behaviour. Exerplaza does not currently maintain a custom attribute-mapping configuration beyond extracting the email attribute used for local user lookup.
+
 ---
 
 ### `saml_session.py`
@@ -512,7 +530,7 @@ Responsibilities:
 
 ## `backend/saml_configuration`
 
-The saml_configuration package provides the static runtime configuration required by the Exerplaza SAML Service Provider.
+The configuration package provides static SAML runtime configuration. Some validation is performed during application startup, while SAML-specific validation occurs when the Service Provider configuration is initialized. Once initialized, the configuration remains static for the lifetime of the running application process.
 
 It contains the configuration bridge between Exerplaza, PySAML2, and the deployed SAML environment.
 
@@ -863,6 +881,24 @@ SAML_SECRET=
 
 ---
 
+### SAML attribute mapping
+
+
+The current implementation relies on PySAML2’s default attribute handling when extracting identity attributes from the SAML response.
+
+Exerplaza currently requires an email attribute to be present in the validated SAML identity data. That email value is used to resolve the local Exerplaza user account.
+
+Current behaviour:
+
+- email is the primary identity attribute used by Exerplaza;  
+- no local user provisioning is performed from SAML assertions;  
+- if the SAML response does not provide a usable email value, authentication fails;  
+- if no existing Exerplaza user matches the email address, authentication fails.  
+
+If a production Identity Provider uses different attribute naming conventions, the SAML attribute mapping configuration may need to be adjusted so that Exerplaza can reliably obtain the user email address.
+
+---
+
 ### Optional variables
 
 ```
@@ -902,7 +938,7 @@ Missing xmlsec1 prevents SAML initialization.
 
 ---
 
-## Runtime validation
+## validation
 
 SAML configuration validation is performed in two stages.
 
@@ -948,6 +984,8 @@ Identity Provider metadata is loaded locally and is considered trusted configura
 The implementation does not dynamically fetch metadata during runtime. Changes to Identity Provider metadata require replacing the local metadata file and restarting the application.
 
 PySAML2 is responsible for protocol-level validation, including signature and assertion validation. Exerplaza remains responsible for application-level authentication decisions.
+
+Protocol-level time validation of SAML assertions, including checks such as assertion validity windows and related clock-skew handling, is delegated to PySAML2 rather than implemented directly in the Exerplaza application layer.
 
 The Service Provider private key must be protected as deployment-sensitive secret material. Unauthorized access to this key could allow an attacker to create SAML messages appearing to originate from the Service Provider.
 
@@ -1048,6 +1086,28 @@ A valid SAML response alone does not create an application session. The user mus
 
 This separation keeps external identity verification separate from application authorization and session management.
 
+In the current implementation, successful SAML authentication is not sufficient on its own to grant access. Exerplaza must also be able to resolve a pre-existing local user account by the email address extracted from the SAML response. Missing email attributes, unknown users, or disabled users all result in authentication failure.
+
+---
+
+# Operational Logging
+
+The SAML integration emits application-side diagnostic and audit-style log events through the Flask application logger.
+
+Current logging covers key points in the authentication flow, including:
+
+- metadata generation failures;
+- login initialization failures;
+- SAML ACS processing failures;
+- successful SAML login initiation;
+- successful SAML authentication completion;
+- invalid, expired, or unknown authentication request handling;
+- user resolution failures such as missing users or disabled users.
+
+These logs are intended to support debugging, operational monitoring, and investigation of failed authentication attempts. Logged fields may include request identifiers, email addresses, internal user identifiers, and failure reason codes depending on the event.
+
+The current implementation uses application logging for observability only. It does not currently define a dedicated audit logging subsystem, structured retention policy, or external security event pipeline as part of the SAML module itself.
+
 # Testing
 
 The SAML integration includes automated tests covering authentication flow correctness, security-sensitive behaviour, and failure handling.
@@ -1109,15 +1169,15 @@ The Keycloak environment is used exclusively for development and integration tes
 
 The end-to-end test validates the complete authentication lifecycle:
 
-1. User starts authentication from the Exerplaza login page.
-2. Exerplaza generates a SAML AuthnRequest.
-3. The browser is redirected to the local Identity Provider.
-4. The user authenticates through the Identity Provider.
-5. The Identity Provider returns a SAMLResponse.
-6. Exerplaza validates the SAML response.
-7. The authentication transaction is consumed.
-8. The local user is resolved.
-9. The application session is created.
+1. User starts authentication from the Exerplaza login page.  
+2. Exerplaza generates a SAML AuthnRequest.  
+3. The browser is redirected to the local Identity Provider.  
+4. The user authenticates through the Identity Provider.  
+5. The Identity Provider returns a SAMLResponse.  
+6. Exerplaza validates the SAML response.  
+7. The authentication transaction is consumed.  
+8. The local user is resolved.  
+9. The application session is created.  
 
 The test environment validates the integration between Exerplaza, PySAML2, and an external SAML Identity Provider implementation.
 

@@ -32,9 +32,19 @@ The current implementation demonstrates the complete SAML authentication flow an
 
 The current implementation is designed around a single configured Identity Provider. Support for multiple Identity Providers or federation scenarios is not included in the current scope.
 
-# Architecture
+## SAML Authentication Architecture
 
-## # SAML Authentication Architecture and Flow
+The SAML authentication implementation introduces a Service Provider (SP) integration inside the existing Exerplaza Flask application. The integration extends the existing authentication flow by adding an external Identity Provider (IdP) authentication option while preserving the existing user and session management mechanisms.
+
+The architecture consists of:  
+- Existing Exerplaza authentication UI  
+- SAML Service Provider integration  
+- PySAML2 SAML processing library  
+- Database-backed AuthnRequest tracking  
+- Existing user and session management  
+- External Identity Provider
+
+## SAML Authentication Architecture and Flow
 
 ```mermaid
 sequenceDiagram
@@ -86,9 +96,51 @@ sequenceDiagram
     Browser-->>User: Return authenticated user
 
     Note right of SamlModule: SAML validation failures, expired requests, replayed requests, missing users, or disabled users redirect to the SAML error page instead of creating a session.
-```
+
+```mermaid
+flowchart LR
+
+    User[User]
+    Browser[Browser]
+
+    IdP[External Identity Provider<br/>(IdP)]
+
+    subgraph Exerplaza["Exerplaza Flask Application"]
+
+        Login[Existing Login Page<br/>Authentication UI]
+
+        subgraph SAML["SAML Service Provider Integration"]
+
+            Routes[SAML Endpoints<br/>/saml/login<br/>/saml/acs<br/>/saml/metadata]
+
+            PySAML[PySAML2 SAML Library]
+
+            Config[SAML Configuration<br/>Certificates<br/>Metadata<br/>Environment Settings]
+
+            Tracking[SAML AuthnRequest<br/>Tracking Store]
+        end
+
+        UserSession[Existing User and<br/>Session Management]
+    end
+
+
+    User --> Browser
+    Browser --> Login
+
+    Login --> Routes
+
+    Routes --> PySAML
+
+    Config --> PySAML
+
+    PySAML --> IdP
+
+    Routes --> Tracking
+
+    Routes --> UserSession
 
 ---
+
 ## Components
 
 ### Flask Application

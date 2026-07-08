@@ -297,11 +297,11 @@ The /saml/acs endpoint receives the SAMLResponse and begins the response process
 
 During this step:
 
-The SAML response is retrieved from the incoming request.  
-The response is parsed and validated through PySAML2.  
-The authenticated identity attributes are extracted.  
-The original AuthnRequest identifier (InResponseTo) is recovered from the SAML response.  
-The corresponding authentication transaction is checked against the AuthnRequest tracking store.  
+- The SAML response is retrieved from the incoming request.  
+- The response is parsed and validated through PySAML2.  
+- The authenticated identity attributes are extracted.  
+- The original AuthnRequest identifier (`InResponseTo`) is recovered from the SAML response.  
+- The corresponding authentication transaction is checked against the AuthnRequest tracking store.  
 
 This stage validates that the response is a valid SAML response and that it references an authentication request previously created by Exerplaza.
 

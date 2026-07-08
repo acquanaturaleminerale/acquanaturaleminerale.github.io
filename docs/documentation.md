@@ -382,7 +382,7 @@ exerplaza/
     │   │
     │   ├── saml_sp_config.py
     │   ├── sp_settings.py
-    │   ├── certificates/
+    │   ├── certs/
     │   ├── metadata/
     │   └── scripts/
     │
@@ -741,178 +741,417 @@ The current implementation expects cleanup to be triggered externally through a 
 
 # Configuration
 
-The SAML integration requires several configuration parameters.
+The SAML integration uses a combination of environment variables and local deployment files to configure the Service Provider.
 
-These include:
+Configuration is loaded during application startup and remains static for the lifetime of the running application process.
+
+Changes to SAML configuration require an application restart.
+
+The configuration consists of:
+
+- Service Provider identity and endpoints;  
+- Identity Provider metadata;  
+- Service Provider signing credentials;  
+- SAML runtime dependencies;  
+- Environment-specific runtime settings.  
+
+---
 
 ## Service Provider information
 
-Defines Exerplaza as a SAML Service Provider.
+The Service Provider configuration defines Exerplaza as a SAML participant.
 
-Examples:
+The following values are configured:
 
-- entity identifier;
-- assertion consumer service URL;
-- certificates.
+### Entity identifier
+
+The Service Provider entity identifier uniquely identifies Exerplaza to the Identity Provider.
+
+The current implementation derives the entity identifier from the configured base URL:
+
+```
+{SAML_BASE_URL}/saml/sp
+```
+
+Example:
+
+```
+https://exerplaza.example.com/saml/sp
+```
+
+---
+
+### Assertion Consumer Service endpoint
+
+The Assertion Consumer Service (ACS) endpoint receives SAML responses returned by the Identity Provider.
+
+The current endpoint is:
+
+```
+{SAML_BASE_URL}/saml/acs
+```
+
+The endpoint uses the HTTP POST SAML binding.
+
+---
+
+### Service Provider certificates
+
+The Service Provider uses an X.509 certificate and private key for signing SAML authentication requests.
+
+Configured files:
+
+```
+backend/saml_configuration/certs/sp-cert.pem  
+backend/saml_configuration/certs/sp-key.pem  
+```
+
+The certificate and private key must belong to the same key pair.
+
+The application validates the certificate material during SAML initialization before enabling authentication.
+
+Certificate rotation is currently a manual process.
+
+During certificate replacement, the new certificate and key pair should be added to the configuration alongside the existing pair. Both credential pairs may temporarily exist at the same time during the transition period.
+
+After the Identity Provider has been updated and the new certificate is active, the old certificate and key can be removed from the configuration.
+
+Certificate changes require an application restart before the new credentials are loaded.
+
+Certificate rotation is expected to be an infrequent operational task and should only be performed when required by certificate expiration, security policy, or credential compromise.
 
 ---
 
 ## Identity Provider information
 
-Defines the external authentication provider.
+The Identity Provider configuration is provided through locally stored metadata.
 
-Examples:
+Current metadata source:
 
-- IdP metadata;
-- entity identifier;
-- certificates;
-- endpoints.
+```
+backend/saml_configuration/metadata/idp_metadata.xml
+```
+
+The metadata file contains:
+
+- Identity Provider entity information;  
+- SAML endpoints;  
+- trusted signing certificates.  
+
+The current implementation does not dynamically retrieve metadata from the Identity Provider.
+
+Changes to IdP metadata require replacing the metadata file and restarting the application.
+
+The current implementation supports a single configured Identity Provider.
 
 ---
 
 ## Environment variables
 
-SAML-related settings are loaded through environment variables.
+The SAML integration reads runtime-specific values from environment variables.
 
-The required variables depend on the deployment environment.
-
-Example:
+### Required variables
 
 ```
-SAML_ENTITY_ID=
-SAML_ACS_URL=
-SAML_METADATA_PATH=
-SAML_CERT_PATH=
-SAML_KEY_PATH=
+SAML_BASE_URL=  
+SAML_SECRET=  
 ```
+
+`SAML_BASE_URL` defines the public URL used to generate Service Provider identifiers and endpoints.
+
+`SAML_SECRET` provides the secret value used by PySAML2 for internal SAML state handling.
 
 ---
 
+### Optional variables
+
+```
+SAML_DEBUG=false  
+SAML_LOG_LEVEL=INFO  
+```
+
+`SAML_DEBUG` enables additional PySAML2 debugging output.
+
+`SAML_LOG_LEVEL` controls SAML-related logging verbosity.
+
+Available levels:
+
+```
+DEBUG
+INFO
+WARNING
+ERROR
+CRITICAL
+```
+
+Debug logging should not be enabled in production environments because SAML processing logs may contain sensitive diagnostic information.
+
+---
+
+## External dependencies
+
+The SAML integration requires the following external dependency:
+
+### xmlsec1
+
+PySAML2 uses xmlsec1 for XML signature operations.
+
+The application validates that the binary is available during startup.
+
+Missing xmlsec1 prevents SAML initialization.
+
+---
+
+## Runtime validation
+
+SAML configuration validation is performed in two stages.
+
+### Startup validation
+
+Performed during application startup.
+
+Checks:
+
+- required environment variables;  
+- logging configuration;  
+- xmlsec1 availability.  
+
+---
+
+### Runtime SAML validation
+
+Performed before initializing the Service Provider.
+
+Checks:
+
+- Identity Provider metadata availability;  
+- Service Provider certificate availability;  
+- private key availability;  
+- certificate and private key matching;  
+- SAML secret availability.  
+
+This separation allows basic deployment errors to fail early while keeping environment-dependent checks close to SAML initialization.
+
 # Security Considerations
 
-## Persistent request tracking
+## Trust Model
 
-The default PySAML2 request state handling relies on temporary internal storage.
+The SAML integration relies on several trusted components:
 
-This approach was not suitable for the Exerplaza deployment environment because multiple uWSGI workers may process different parts of the same authentication transaction.
+- The configured Identity Provider metadata.
+- The Identity Provider signing certificates contained in metadata.
+- The Service Provider private key used for signing.
+- The application database storing authentication transaction state.
 
-To solve this issue, authentication requests are stored in the application database.
+Identity Provider metadata is loaded locally and is considered trusted configuration.
+
+The implementation does not dynamically fetch metadata during runtime. Changes to Identity Provider metadata require replacing the local metadata file and restarting the application.
+
+PySAML2 is responsible for protocol-level validation, including signature and assertion validation. Exerplaza remains responsible for application-level authentication decisions.
+
+The Service Provider private key must be protected as deployment-sensitive secret material. Unauthorized access to this key could allow an attacker to create SAML messages appearing to originate from the Service Provider.
+
+## Authentication transaction tracking
+
+SAML authentication transactions are tracked using a persistent database-backed request store.
+
+Each SAML login attempt creates a temporary authentication transaction containing:
+
+- the generated SAML AuthnRequest identifier;
+- the RelayState value associated with the login attempt;
+- the request expiration timestamp;
+- the consumption status of the transaction.
+
+The transaction store exists to correlate SAML responses returned by the Identity Provider with authentication requests originally created by Exerplaza.
+
+The implementation does not rely on PySAML2's default in-memory request state handling because the application runs with multiple workers. Process-local state would not guarantee that the same worker handles both the authentication request and the returned SAML response.
+
+Persistent storage ensures that authentication transaction validation works consistently across application workers.
+
+Authentication transaction records represent temporary security state only. They are not user sessions and do not contain application authorization state.
 
 ---
 
 ## Replay protection
 
-Each SAML authentication request is associated with:
+The implementation prevents replay of previously accepted SAML authentication responses through single-use authentication transactions.
 
-- a unique identifier;
-- an expiration time;
-- a consumption status.
+Before creating an authenticated application session, the returned SAML response must reference an existing authentication transaction that:
 
-A previously completed request cannot be reused.
+- was created by Exerplaza;
+- has not expired;
+- has not already been consumed.
+
+Consumption of the authentication transaction is performed atomically at the database level.
+
+This prevents concurrent authentication attempts from successfully processing the same SAML response multiple times.
+
+Once a transaction has been consumed, subsequent attempts to use the same request identifier are rejected.
+
+Expired transactions are invalid and cannot be used to create authenticated sessions.
+
+---
+
+## RelayState validation
+
+RelayState is used to preserve the intended application destination across the external Identity Provider authentication flow.
+
+Before starting authentication, the requested redirect destination is validated by Exerplaza.
+
+Only approved internal application destinations are accepted.
+
+The stored RelayState value is recovered from the validated authentication transaction after successful SAML response processing.
+
+This prevents attackers from using the SAML login flow as an open redirect mechanism.
+
+RelayState handling is performed by the application layer rather than delegated entirely to PySAML2.
 
 ---
 
-## Validation
+## Certificate usage
 
-The implementation includes tests covering:
+The Service Provider uses an X.509 certificate and private key for SAML signing operations.
 
-- invalid authentication responses;
-- expired requests;
-- invalid sessions;
-- disabled users;
-- unsafe redirects;
-- authentication failures.
+The private key is used to sign SAML authentication requests sent to the Identity Provider.
+
+The public certificate is provided to the Identity Provider so that signed requests can be verified.
+
+Certificate material is loaded from the local deployment environment and validated before SAML initialization.
+
+The application verifies that:
+
+- the certificate exists;
+- the private key exists;
+- the certificate is readable;
+- the certificate matches the private key.
+
+The private key must be protected as deployment-sensitive secret material. Unauthorized access could allow an attacker to impersonate the Service Provider.
+
+Certificate rotation is currently a manual operational process.
 
 ---
+
+## Application authentication boundary
+
+The SAML integration authenticates users through the configured Identity Provider but does not replace the existing Exerplaza authentication system.
+
+SAML is responsible for establishing the external identity of the user.
+
+After successful SAML validation, Exerplaza remains responsible for:
+
+- resolving the local user account;  
+- checking application-specific access restrictions;  
+- creating the application session;  
+- enforcing application authorization rules.  
+
+A valid SAML response alone does not create an application session. The user must also successfully pass Exerplaza-specific authentication checks.
+
+This separation keeps external identity verification separate from application authorization and session management.
 
 # Testing
 
+The SAML integration includes automated tests covering authentication flow correctness, security-sensitive behaviour, and failure handling.
+
+Testing focuses on validating the application logic around SAML authentication rather than replacing external Identity Provider validation.
+
+---
+
 ## Automated tests
 
-The implementation includes automated tests covering different parts of the authentication flow.
+The automated test suite covers:
 
-Tests include:
+- invalid SAML responses;
+- expired authentication requests;
+- replayed authentication responses;
+- missing authentication transactions;
+- invalid redirect destinations;
+- disabled users;
+- failed user resolution;
+- authentication failures.
+
+The tests validate that invalid authentication attempts fail safely without creating an authenticated application session.
+
+---
 
 ### Component tests
 
-Validate individual components such as:
+Component tests validate individual SAML integration components.
 
-- configuration loading;
+Covered areas include:
+
+- SAML configuration loading;
 - route behaviour;
-- helper functions.
+- authentication helpers;
+- SAML transaction storage operations.
 
 ---
 
 ### Behavioural tests
 
-Validate interactions between components:
+Behavioural tests validate interactions between the different SAML integration components.
 
-- request creation;
-- database tracking;
-- response validation;
-- authentication flow behaviour.
+Covered scenarios include:
+
+- creation of authentication requests;
+- persistence of AuthnRequest tracking records;
+- retrieval and validation of authentication transactions;
+- single-use request consumption;
+- response processing behaviour;
+- application session creation after successful authentication.
 
 ---
 
 ## End-to-end testing
 
-The complete authentication flow was tested using a local Keycloak Identity Provider.
+The complete SAML login flow has been validated using a local Keycloak Identity Provider environment.
 
-The test validates:
+The Keycloak environment is used exclusively for development and integration testing. It is maintained separately from the production deployment path and is not intended to be deployed as part of the Exerplaza production environment.
 
-1. Starting authentication.
-2. Redirecting to the Identity Provider.
-3. Completing authentication.
-4. Returning the SAML response.
-5. Validating the response.
-6. Creating the application session.
+The end-to-end test validates the complete authentication lifecycle:
 
----
+1. User starts authentication from the Exerplaza login page.
+2. Exerplaza generates a SAML AuthnRequest.
+3. The browser is redirected to the local Identity Provider.
+4. The user authenticates through the Identity Provider.
+5. The Identity Provider returns a SAMLResponse.
+6. Exerplaza validates the SAML response.
+7. The authentication transaction is consumed.
+8. The local user is resolved.
+9. The application session is created.
 
-# Setup
-
-## Requirements
-
-Before running the SAML integration, ensure that:
-
-- the project environment is correctly configured;
-- required dependencies are installed;
-- database migrations are applied;
-- certificates are generated.
+The test environment validates the integration between Exerplaza, PySAML2, and an external SAML Identity Provider implementation.
 
 ---
 
-## Identity Provider setup
+# Certificate rotation
 
-A local Identity Provider can be configured using Keycloak.
+Certificate rotation is currently performed manually.
 
-The IdP must provide:
+The expected workflow is:
 
-- metadata;
-- authentication endpoints;
-- certificates;
-- user attributes.
+1. Generate a new certificate pair.
+2. Add the new certificate material alongside the existing certificate configuration.
+3. Update the Identity Provider trust configuration.
+4. Deploy the updated configuration.
+5. Verify authentication.
+6. Remove obsolete certificate material after the transition period.
 
----
-
-## Certificates
-
-The implementation requires certificates for SAML communication.
-
-Generation and validation scripts are provided to simplify certificate management.
+Automatic certificate renewal and certificate rollover are not currently implemented.
 
 ---
 
 # Limitations
 
-The current implementation is a functional prototype.
+The current implementation provides a complete SAML authentication integration for the supported Exerplaza deployment scenario.
 
 Known limitations:
 
-- only one Identity Provider has been tested;
-- production deployment requires additional validation;
-- federation scenarios require further testing;
-- a complete production security review has not been performed.
+- Single Identity Provider support only.
+- Manual certificate rotation.
+- Local metadata management.
+- No SAML federation discovery.
+- No automated certificate renewal.
+- Additional production security review required before large-scale deployment.
 
 ---
 
@@ -932,7 +1171,7 @@ Possible future extensions include:
 
 When modifying the SAML implementation, particular attention should be given to:
 
-- request tracking logic;
+- authentication request tracking logic;
 - certificate management;
 - Identity Provider configuration;
 - authentication state handling.

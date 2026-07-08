@@ -101,27 +101,27 @@ sequenceDiagram
 ```mermaid
 flowchart LR
 
-    User[User]
-    Browser[Browser]
+    User["User"]
+    Browser["Browser"]
 
-    IdP[External Identity Provider<br/>(IdP)]
+    IdP["External Identity Provider<br/>(IdP)"]
 
     subgraph Exerplaza["Exerplaza Flask Application"]
 
-        Login[Existing Login Page<br/>Authentication UI]
+        Login["Existing Login Page<br/>Authentication UI"]
 
         subgraph SAML["SAML Service Provider Integration"]
 
-            Routes[SAML Endpoints<br/>/saml/login<br/>/saml/acs<br/>/saml/metadata]
+            Routes["SAML Endpoints<br/>/saml/login<br/>/saml/acs<br/>/saml/metadata"]
 
-            PySAML[PySAML2 SAML Library]
+            PySAML["PySAML2 SAML Library"]
 
-            Config[SAML Configuration<br/>Certificates<br/>Metadata<br/>Environment Settings]
+            Config["SAML Configuration<br/>Certificates<br/>Metadata<br/>Environment Settings"]
 
-            Tracking[SAML AuthnRequest<br/>Tracking Store]
+            Tracking["SAML AuthnRequest<br/>Tracking Store"]
         end
 
-        UserSession[Existing User and<br/>Session Management]
+        UserSession["Existing User and<br/>Session Management"]
     end
 
 

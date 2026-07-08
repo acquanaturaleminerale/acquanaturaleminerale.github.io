@@ -20,4 +20,6 @@ nav:
   - Home: index.md
   - My Involvement: involvement.md
   - Setup: setup.md
-  - Documentation: documentation.md
+  - overview: doc-overview.md
+  - implementation: doc-implementation.md
+  - security: doc-security.md

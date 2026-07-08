@@ -8,14 +8,14 @@ The implementation acts as a SAML Service Provider (SP) integrated directly into
 
 The current implementation provides:
 
-- SAML authentication through a configured Identity Provider
-- Service Provider metadata generation
-- SAML authentication request generation
-- Assertion Consumer Service (ACS) processing
-- Integration with the existing user session management
-- Database-backed SAML authentication request lifecycle tracking
-- Replay protection mechanisms through single-use request consumption and expiration validation
-- Local certificate generation and SAML environment setup utilities for testing and deployment configuration
+- SAML authentication through a configured Identity Provider  
+- Service Provider metadata generation  
+- SAML authentication request generation  
+- Assertion Consumer Service (ACS) processing  
+- Integration with the existing user session management  
+- Database-backed SAML authentication request lifecycle tracking  
+- Replay protection mechanisms through single-use request consumption and expiration validation  
+- Local certificate generation and SAML environment setup utilities for testing and deployment configuration  
 
 The implementation currently supports a single configured Identity Provider and represents a complete SAML authentication flow integration within the current project scope.
 
@@ -25,10 +25,10 @@ The SAML configuration is loaded during application startup and is considered st
 
 The current implementation demonstrates the complete SAML authentication flow and provides a functional basis for further production validation. Before production use, additional validation and hardening would be required, including:
 
-- Additional security hardening and review
-- Extended handling of edge cases and failure scenarios
-- Validation against the target production Identity Provider environment
-- Additional deployment-specific testing and operational validation
+- Additional security hardening and review  
+- Extended handling of edge cases and failure scenarios  
+- Validation against the target production Identity Provider environment  
+- Additional deployment-specific testing and operational validation  
 
 The current implementation is designed around a single configured Identity Provider. Support for multiple Identity Providers or federation scenarios is not included in the current scope.
 

@@ -96,7 +96,8 @@ sequenceDiagram
     Browser-->>User: Return authenticated user
 
     Note right of SamlModule: SAML validation failures, expired requests, replayed requests, missing users, or disabled users redirect to the SAML error page instead of creating a session.
-
+```
+---
 ```mermaid
 flowchart LR
 

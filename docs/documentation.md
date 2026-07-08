@@ -83,7 +83,9 @@ sequenceDiagram
     SamlModule-->>Browser: Redirect to RelayState
     Browser-->>User: Return authenticated user
 
-    Note right of SamlModule: If SAML validation fails, the request is expired,<br/>already consumed, the user does not exist, or the<br/>user is disabled, the flow is redirected to the<br/>SAML error page instead of creating a session.
+    Note right of SamlModule: If SAML validation fails, the request is expired,
+    already consumed, the user does not exist, or the user is disabled,
+    the flow is redirected to the SAML error page instead of creating a session.
 ```
 
 ---

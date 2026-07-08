@@ -491,5 +491,3 @@ Examples include:
 These logs are intended for developer and operational diagnostics rather than user-facing error handling. Log verbosity is influenced by the application logging configuration and, for PySAML2-specific logging, by the SAML debug and log-level settings.
 
 Care should be taken not to expose sensitive SAML data in production logs. Debug logging should be enabled only when required for troubleshooting.
-
-That’s enough. You don’t need a whole observability chapter.

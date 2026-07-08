@@ -34,7 +34,7 @@ The current implementation is designed around a single configured Identity Provi
 
 Expired and unused authentication requests can be removed through the provided cleanup operation. The database does not automatically remove expired records; cleanup must be triggered by an external maintenance process or scheduled task.
 
-## SAML Authentication Architecture and Flow
+## SAML Authentication Architecture 
 
 The SAML authentication implementation introduces a Service Provider (SP) integration inside the existing Exerplaza Flask application. The integration extends the existing authentication flow by adding an external Identity Provider (IdP) authentication option while preserving the existing user and session management mechanisms.
 
@@ -47,7 +47,7 @@ The architecture consists of the following components:
 - The existing Exerplaza user and session management system, which remains responsible for application authentication state.  
 - An external Identity Provider, which performs user authentication and returns SAML assertions.  
 
-## SAML Authentication Architecture and Flow
+## SAML Authentication Flow
 
 ```mermaid
 sequenceDiagram

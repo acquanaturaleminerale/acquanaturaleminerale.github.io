@@ -1,3 +1,0 @@
-mermaid.initialize({
-    startOnLoad: true
-});

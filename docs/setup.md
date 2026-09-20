@@ -115,6 +115,8 @@ exerplaza/backend/saml_configuration/certs/
     ├── sp-cert.pem
     └── sp-key.pem
 ```
+This process will have to be repeated twice, once for the signging certificate pair and once for the encryption certificate pair
+Do not run the script twice in a row, instead generate 1 sec, move it in the location as specified in step 4 then generate the other certificate set.
 
 The certificate is used by the Service Provider to sign SAML requests.
 
@@ -136,9 +138,17 @@ At the end of the process, the script prints the location of the generated files
 
 After generating the files, move or copy them from `certs/next/` into the active certificate directory expected by the application:
 
+- if the directory is not present create it and name it as specified (one called signing, one called encryption)
+
 ```text
-exerplaza/backend/saml_configuration/certs/sp-cert.pem
-exerplaza/backend/saml_configuration/certs/sp-key.pem
+exerplaza/backend/saml_configuration/certs/signing/sp-cert.pem
+exerplaza/backend/saml_configuration/certs/signing/sp-key.pem
+```
+and
+
+```text
+exerplaza/backend/saml_configuration/certs/encryption/sp-cert.pem
+exerplaza/backend/saml_configuration/certs/encryption/sp-key.pem
 ```
 
 The current runtime configuration in `sp_settings.py` expects the certificate and private key at those exact paths.

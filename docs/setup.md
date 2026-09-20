@@ -69,7 +69,7 @@ The initial `SAML_SECRET` value can be temporary. It will be replaced later with
 | `SAML_LOG_LEVEL` | Controls the verbosity of SAML-related logs. Valid values are `DEBUG`, `INFO`, `WARNING`, `ERROR`, and `CRITICAL`.                       | `DEBUG`                  |
 | `SAML_SECRET`    | Secret used by PySAML2 to sign and protect internal SAML state. Replace the temporary value after generating the final secret.           | generated later          |
 | `SAML_AUTHN_CLEANUP_INTERVAL_SECONDS`    | amount of time between authentication request db cleanup cycles                                                  | `3600`                   |
-| `SAML_CERTIFICATE_CHECK_INTERVAL_SECONDS`    | amount of time between certificate expiration checks                                                         | `3600`                   |
+| `SAML_CERTIFICATE_CHECK_INTERVAL_SECONDS`    | amount of time between certificate expiration checks                                                         | `86400`                   |
 
 Notes:
 

@@ -54,6 +54,8 @@ SAML_BASE_URL=http://127.0.0.1:54321
 SAML_DEBUG=true
 SAML_LOG_LEVEL=DEBUG
 SAML_SECRET=0123456789
+SAML_AUTHN_CLEANUP_INTERVAL_SECONDS=3600
+SAML_CERTIFICATE_CHECK_INTERVAL_SECONDS=86400
 ```
 
 The initial `SAML_SECRET` value can be temporary. It will be replaced later with a cryptographically generated secret.
@@ -66,6 +68,8 @@ The initial `SAML_SECRET` value can be temporary. It will be replaced later with
 | `SAML_DEBUG`     | Enables PySAML2 debug mode. Useful during development, but generally not recommended in production.                                      | `true`                   |
 | `SAML_LOG_LEVEL` | Controls the verbosity of SAML-related logs. Valid values are `DEBUG`, `INFO`, `WARNING`, `ERROR`, and `CRITICAL`.                       | `DEBUG`                  |
 | `SAML_SECRET`    | Secret used by PySAML2 to sign and protect internal SAML state. Replace the temporary value after generating the final secret.           | generated later          |
+| `SAML_AUTHN_CLEANUP_INTERVAL_SECONDS`    | amount of time between authentication request db cleanup cycles                                                  | `3600`                   |
+| `SAML_CERTIFICATE_CHECK_INTERVAL_SECONDS`    | amount of time between certificate expiration checks                                                         | `3600`                   |
 
 Notes:
 

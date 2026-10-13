@@ -50,6 +50,7 @@ Before starting the application, configure the SAML-related variables in the `.e
 Example:
 
 ```env
+SAML_ENTITY_ID=https://example.com/saml/sp
 SAML_BASE_URL=http://127.0.0.1:54321
 SAML_DEBUG=true
 SAML_LOG_LEVEL=DEBUG
@@ -64,6 +65,7 @@ The initial `SAML_SECRET` value can be temporary. It will be replaced later with
 
 | Variable         | Purpose                                                                                                                                  | Development value        |
 | ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| `SAML_ENTITY_ID`    | Stable, unique identifier for the Service Provider (SP). It must match the Entity ID registered with the Identity Provider (IdP).                                                    | `https://example.com/saml/sp (placeholder, change it)`                   |
 | `SAML_BASE_URL`  | Public base URL of the Service Provider. It must match the URL used to access Exerplaza and the URL configured in the Identity Provider. | `http://127.0.0.1:54321` |
 | `SAML_DEBUG`     | Enables PySAML2 debug mode. Useful during development, but generally not recommended in production.                                      | `true`                   |
 | `SAML_LOG_LEVEL` | Controls the verbosity of SAML-related logs. Valid values are `DEBUG`, `INFO`, `WARNING`, `ERROR`, and `CRITICAL`.                       | `DEBUG`                  |
@@ -73,6 +75,7 @@ The initial `SAML_SECRET` value can be temporary. It will be replaced later with
 
 Notes:
 
+* `SAML_ENTITY_ID` identifies the SP to the IdP. The example value is an exemplary placeholder; configure an appropriate, stable identifier and register the exact value with the IdP. The identifier does not need to resolve to a webpage. (for instance https://exerplaza-developement-setup.com/saml/sp could be different as well, no problem)
 * `SAML_BASE_URL` must match the URL shown in the browser when accessing the Exerplaza home page.
 * `SAML_DEBUG` can be set to either `true` or `false`.
 * In production, `SAML_LOG_LEVEL=INFO` is recommended unless deeper debugging is required.

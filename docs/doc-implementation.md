@@ -65,7 +65,7 @@ Responsibilities:
 - Store generated SAML request identifiers  
 - Preserve RelayState during the authentication flow  
 - Track authentication request expiration  
-- Prevent replay attacks through single-use request consumption  
+- Prevent replay attacks through single-use request consumption 
 
 The tracking store is database-backed to ensure authentication transaction state remains consistent across multiple application workers.
 
@@ -257,6 +257,7 @@ exerplaza/
     └── models/
         │
         └── SamlAuthnRequest.py
+    
 ```
 
 ---
@@ -431,7 +432,8 @@ Responsibilities:
 - Locate required external dependencies such as xmlsec1.  
 - Validate startup requirements.  
 - Validate runtime SAML files and cryptographic material.  
-- Verify that the configured Service Provider certificate matches its private key.  
+- Verify that the configured Service Provider certificate matches its private key.
+- initalises authentication cleanup and certificate expiry check jobs.
 
 Validation is split into two phases:
 
@@ -462,7 +464,7 @@ This separation allows failures related to SAML deployment material to be detect
 
 The certificates directory contains the Service Provider cryptographic material used for SAML communication.
 
-The current implementation uses certificates for signing purposes. SAML assertion encryption is not currently enabled.
+The current implementation uses certificates for signing and encrypting purposes. 
 
 Stored material:
 
@@ -511,9 +513,9 @@ The scripts directory contains manual SAML environment preparation utilities.
 Current responsibilities:
 
 - Generate Service Provider certificate material.  
-- Validate generated certificate files.   
-
-These scripts are operational helpers and are not part of the runtime authentication flow.
+- Validate generated certificate files.
+- initalizes authentication store cleanup scheduled job
+- initalizes certificate expiry scheduled job
 
 ---
 
@@ -579,7 +581,7 @@ A consumed request cannot be successfully processed again.
 
 Requests exceeding their configured lifetime are rejected.
 
-Expired unused requests may be removed through the maintenance cleanup operation.
+Expired unused requests are removed through the maintenance cleanup operation implemented trough a shceduled cleanup script.
 
 ---
 
@@ -595,8 +597,7 @@ This prevents previously accepted SAML responses from being replayed to create a
 
 ### Cleanup
 
-Expired unused authentication transactions can be removed through the provided cleanup operation.
+Expired unused authentication transactions are automatically removed through the provided cleanup script.
 
-Cleanup is not part of the authentication flow and does not affect active authentication transactions.
+The operation happens by default every hour however the interval can be customised.
 
-The current implementation expects cleanup to be triggered externally through a scheduled maintenance process or administrative operation.

@@ -28,10 +28,10 @@ The following values are configured:
 
 The Service Provider entity identifier uniquely identifies Exerplaza to the Identity Provider.
 
-The current implementation derives the entity identifier from the configured base URL:
+The current implementation accepts the identifier trough the .env file as a configurable setting:
 
 ```
-{SAML_BASE_URL}/saml/sp
+{SAML_ENTITY_ID}
 ```
 
 Example:
@@ -58,13 +58,15 @@ The endpoint uses the HTTP POST SAML binding.
 
 ### Service Provider certificates
 
-The Service Provider uses an X.509 certificate and private key for signing SAML authentication requests.
+The Service Provider uses an X.509 certificate and private key for signing and encrypting SAML authentication requests.
 
 Configured files:
 
 ```
-backend/saml_configuration/certs/sp-cert.pem  
-backend/saml_configuration/certs/sp-key.pem  
+backend/saml_configuration/certs/signing/sp-cert.pem  
+backend/saml_configuration/certs/signing/sp-key.pem
+backend/saml_configuration/certs/encryption/sp-cert.pem  
+backend/saml_configuration/certs/encryption/sp-key.pem  
 ```
 
 The certificate and private key must belong to the same key pair.
@@ -114,13 +116,39 @@ The SAML integration reads runtime-specific values from environment variables.
 ### Required variables
 
 ```
-SAML_BASE_URL=  
-SAML_SECRET=  
+SAML_ENTITY_ID=
+SAML_BASE_URL=
+SAML_DEBUG=
+SAML_LOG_LEVEL=
+SAML_SECRET=
+SAML_AUTHN_CLEANUP_INTERVAL_SECONDS=
+SAML_CERTIFICATE_CHECK_INTERVAL_SECONDS=
 ```
+`SAML_ENTITY_ID` defines the sp public unqiue identifier.
 
 `SAML_BASE_URL` defines the public URL used to generate Service Provider identifiers and endpoints.
 
+`SAML_DEBUG` defines wether or not the pysaml2 library runs in debug mode.
+
+`SAML_LOG_LEVEL` defines the amount of information provided by pysaml2 logs.
+
+Available levels:
+
+```
+DEBUG
+INFO
+WARNING
+ERROR
+CRITICAL
+```
+
 `SAML_SECRET` provides the secret value used by PySAML2 for internal SAML state handling.
+
+`SAML_AUTHN_CLEANUP_INTERVAL_SECONDS` defines the interval between authentication store cleanup operations.
+
+`SAML_CERTIFICATE_CHECK_INTERVAL_SECONDS` defines the interval between certificate validity check operations.
+
+Debug logging should not be enabled in production environments because SAML processing logs may contain sensitive diagnostic information.
 
 ---
 
@@ -141,31 +169,6 @@ Current behaviour:
 If a production Identity Provider uses different attribute naming conventions, the SAML attribute mapping configuration may need to be adjusted so that Exerplaza can reliably obtain the user email address.
 
 In the current implementation, a successful SAML login requires a usable email attribute in the validated SAML response because email is the only supported local user lookup key.
-
----
-
-### Optional variables
-
-```
-SAML_DEBUG=false  
-SAML_LOG_LEVEL=INFO  
-```
-
-`SAML_DEBUG` enables additional PySAML2 debugging output.
-
-`SAML_LOG_LEVEL` controls SAML-related logging verbosity.
-
-Available levels:
-
-```
-DEBUG
-INFO
-WARNING
-ERROR
-CRITICAL
-```
-
-Debug logging should not be enabled in production environments because SAML processing logs may contain sensitive diagnostic information.
 
 ---
 
@@ -273,6 +276,8 @@ Once a transaction has been consumed, subsequent attempts to use the same reques
 
 Expired transactions are invalid and cannot be used to create authenticated sessions.
 
+Expired transactions are periodically deleted by the scheduled cleanup operation.
+
 ---
 
 ## RelayState validation
@@ -293,20 +298,20 @@ RelayState handling is performed by the application layer rather than delegated 
 
 ## Certificate usage
 
-The Service Provider uses an X.509 certificate and private key for SAML signing operations.
+The service provider uses a separate X.509 certificate and private key pair for signing and encryption operations.
 
-The private key is used to sign SAML authentication requests sent to the Identity Provider.
+The private key pair is used to sign and encrypt SAML authentication requests sent to the Identity Provider.
 
-The public certificate is provided to the Identity Provider so that signed requests can be verified.
+The public certificate is provided to the Identity Provider so that signed requests can be verified and encrypted requests can be read.
 
 Certificate material is loaded from the local deployment environment and validated before SAML initialization.
 
 The application verifies that:
 
-- the certificate exists;
-- the private key exists;
-- the certificate is readable;
-- the certificate matches the private key.
+- the certificates exist;
+- the private keys exist;
+- the certificates are readable;
+- the certificates match the private keys.
 
 The private key must be protected as deployment-sensitive secret material. Unauthorized access could allow an attacker to impersonate the Service Provider.
 
@@ -449,7 +454,6 @@ Known limitations:
 - Local metadata management.
 - No SAML federation discovery.
 - No automated certificate renewal.
-- Additional production security review required before large-scale deployment.
 
 ---
 
@@ -459,8 +463,6 @@ Possible future extensions include:
 
 - support for multiple Identity Providers;
 - federation discovery support;
-- additional security testing;
-- production deployment validation;
 - improved monitoring and logging.
 
 ---
